@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "580005342570",
+    "project_id": "easydine-android",
+    "storage_bucket": "easydine-android.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580005342570:android:e7d5de20ae10628bb14913",
+        "android_client_info": {
+          "package_name": "edu.cuhk.csci3310.easydine"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580005342570-lk35qtq51i15268mtcsdkibi2p726g8h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBnODVNOTgapRkMkuq2Bd0yCKxGfxKdmK0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580005342570-lk35qtq51i15268mtcsdkibi2p726g8h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

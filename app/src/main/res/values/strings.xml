@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EasyDine</string>
+    <string name="login">Login</string>
 </resources>
