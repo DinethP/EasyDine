@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
@@ -17,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -24,15 +26,25 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = "MainActivity";
     private String KEY = "isLoggedIn";
     private String preferencesName = "UserDetails";
 
+    private RecyclerView mRecyclerView;
+    private CardListAdapter mAdapter;
+
+    private LinkedList<String> mCardName = new LinkedList<>(Arrays.asList("New Order", "Past Order", "Orders to Pay", "Orders to Receive", "Bus", "Train"));
+
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
     SharedPreferences sharedPreferences;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // make nav_menu items clickable
         navigationView.bringToFront();
         //  This is what makes the nav_menu open and close
-        //  TODO: For some reason, the hamburger menu icon is missing - it is set in xml file
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
@@ -63,6 +74,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
         //  set initial checked nav item
         navigationView.setCheckedItem(R.id.nav_dashboard);
+
+        // set up recyclerview
+        mRecyclerView = findViewById(R.id.recyclerview);
+        mAdapter = new CardListAdapter(this, mCardName);
+        mRecyclerView.setAdapter(mAdapter);
+
+
         Log.d(TAG, "photo url: " + account.getPhotoUrl());
     }
 

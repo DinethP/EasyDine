@@ -3,4 +3,6 @@
     <string name="login">Login</string>
     <string name="navigation_drawer_open">Open Navigation drawer</string>
     <string name="navigation_drawer_close">Close Navigation drawer</string>
+    <string name="card_name">Card Name</string>
+    <string name="number_of_persons">Number of Persons:</string>
 </resources>
