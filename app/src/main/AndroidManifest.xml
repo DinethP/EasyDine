@@ -9,7 +9,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyDine">
-        <activity android:name=".PayActivity"></activity>
+        <activity android:name=".NewOrderDetails"></activity>
+        <activity android:name=".PlacesActivity" />
+        <activity android:name=".PayActivity" />
         <activity android:name=".MyProfile" /> <!-- android:noHistory doesn't put LoginScreen to backstack -->
         <activity
             android:name=".LoginActivity"
