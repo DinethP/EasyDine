@@ -16,6 +16,8 @@ import android.media.audiofx.BassBoost;
 import android.os.Bundle;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +35,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -68,7 +71,24 @@ public class PlacesActivity extends AppCompatActivity {
         textView2 = findViewById(R.id.text_view2);
         cancel_btn = findViewById(R.id.cancel_btn);
         next_btn = findViewById(R.id.next_btn);
+        // next_btn will be disabled at start
+        next_btn.setEnabled(false);
         editText.setFocusable(false);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+            // only enable next button if text has been entered to editText
+            @Override
+            public void afterTextChanged(Editable editable) {
+                enableNextButton();
+            }
+        });
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(PlacesActivity.this);
         // check permission for location
         if(ActivityCompat.checkSelfPermission(PlacesActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -88,6 +108,8 @@ public class PlacesActivity extends AppCompatActivity {
                         Place.Field.LAT_LNG, Place.Field.NAME, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
                 //  create intent
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList)
+                        .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        // TODO: cannot filter only for restaurants
                         .build(PlacesActivity.this);
                 // Start activity for result
                 startActivityForResult(intent, 100);
@@ -107,6 +129,12 @@ public class PlacesActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+    // check if text has been entered to editText to enable next_btn
+    private void enableNextButton() {
+        Log.d(TAG,"From enableNextButton: " + editText.getText().toString());
+        boolean isReady = editText.getText().toString().length() > 1;
+        next_btn.setEnabled(isReady);
     }
 
     @Override
