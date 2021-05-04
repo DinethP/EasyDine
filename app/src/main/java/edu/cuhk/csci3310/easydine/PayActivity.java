@@ -4,38 +4,61 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 public class PayActivity extends AppCompatActivity {
 
-    private int persons;
-    private double amount;
-    private String description;
-
+    private RadioButton equalButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pay);
 
-        TextView textView = (TextView) findViewById(R.id.number_of_customers);
-        TextView textView1 = (TextView) findViewById(R.id.description);
-        TextView textView2 = (TextView) findViewById(R.id.amount);
-        TextView textView3 = (TextView) findViewById(R.id.test_amount);
-        Button cal_button = (Button) findViewById(R.id.cal_button);
+        if (savedInstanceState == null) {
+            equalButton = findViewById(R.id.equal);
+            equalButton.setChecked(true);
 
-        cal_button.setOnClickListener(new View.OnClickListener() {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_container_view, EqualFragment.class, null)
+                    .commit();
+        }
+
+        final RadioGroup radioGroup = findViewById(R.id.radio_group);
+
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onClick(View view) {
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                View radioButton = radioGroup.findViewById(i);
+                int index = radioGroup.indexOfChild(radioButton);
+                switch (index){
+                    case 0:
+                        EqualFragment equalFragment = new EqualFragment();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container_view, equalFragment, null)
+                                .setReorderingAllowed(true)
+                                .commit();
+                        break;
+                    case 1:
+                        PercentageFragment percentageFragment = new PercentageFragment();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container_view, percentageFragment, null)
+                                .setReorderingAllowed(true)
+                                .commit();
+                        break;
+                    case 2:
+                        ValueFragment valueFragment = new ValueFragment();
+                        getSupportFragmentManager().beginTransaction()
+                                .replace(R.id.fragment_container_view, valueFragment, null)
+                                .setReorderingAllowed(true)
+                                .commit();
+                        break;
+                }
 
-                persons = Integer.parseInt(textView.getText().toString());
-                description = textView1.getText().toString();
-                amount = Double.parseDouble(textView2.getText().toString());
-                textView3.setText(String.valueOf(amount / persons));
             }
         });
 
-
-
     }
+
 }
