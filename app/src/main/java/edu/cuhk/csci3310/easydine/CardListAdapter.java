@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardViewHolder> {
 
     private LayoutInflater mInflater;
-    private final LinkedList<String> mCardNameList;
+    private LinkedList<String> mCardNameList;
 
     class CardViewHolder extends RecyclerView.ViewHolder{
 
