@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="edu.cuhk.csci3310.easydine">
+<!--    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" tools:node="remove"/>-->
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -9,7 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EasyDine">
-        <activity android:name=".PayActivity"></activity>
+        <activity android:name=".NewOrderDetails"></activity>
+        <activity android:name=".PlacesActivity" />
+        <activity android:name=".PayActivity" />
         <activity android:name=".MyProfile" /> <!-- android:noHistory doesn't put LoginScreen to backstack -->
         <activity
             android:name=".LoginActivity"

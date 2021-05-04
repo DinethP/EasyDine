@@ -15,7 +15,10 @@ import androidx.recyclerview.widget.RecyclerView;
 public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardViewHolder> {
 
     private LayoutInflater mInflater;
-    private LinkedList<String> mCardNameList;
+    private final LinkedList<String> mCardNameList;
+    // intent for card item clicks
+    Intent intent;
+
 
     class CardViewHolder extends RecyclerView.ViewHolder{
 
@@ -48,16 +51,18 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         String cardName = mCardNameList.get(position);
         holder.textView.setText(cardName);
-
         // make the cards clickable
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 switch (position){
-
+                    case 0:
+                        intent = new Intent(view.getContext(), PlacesActivity.class);
+                        view.getContext().startActivity(intent);
+                        break;
                     // 3rd card: split bill function
                     case 2:
-                        Intent intent = new Intent(view.getContext(), PayActivity.class);
+                        intent = new Intent(view.getContext(), PayActivity.class);
                         view.getContext().startActivity(intent);
                         break;
 
