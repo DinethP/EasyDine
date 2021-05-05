@@ -25,6 +25,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -51,11 +52,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         sharedPreferences = getApplicationContext().getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_main);
-        GoogleSignInAccount account = getIntent().getParcelableExtra("ACCOUNT");
+        FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
         ImageView profilePic = findViewById(R.id.profilePic);
         TextView title = findViewById(R.id.greeting);
-        title.setText("Hello " + account.getGivenName());
+        title.setText("Hello " + account.getDisplayName());
         if (account.getPhotoUrl() != null) {
+            // TODO: photoURL is always null
+            Log.d(TAG, "Photo URL: " + account.getPhotoUrl());
             profilePic.setImageURI(account.getPhotoUrl());
         }
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
