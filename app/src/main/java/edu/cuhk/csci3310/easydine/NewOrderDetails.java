@@ -1,10 +1,14 @@
 package edu.cuhk.csci3310.easydine;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -15,54 +19,57 @@ import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
-public class NewOrderDetails extends AppCompatActivity {
+public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener{
     private String TAG = "NewOrderActivity";
     private Place place;
-    ImageView imageView;
-    TextView location_name_view;
-    TextView rating_view;
+    private FoodListAdapter foodListAdapter;
+    private RecyclerView recyclerView;
+    private LinkedList<Double> foodPrices = new LinkedList<Double>();
+    private LinkedList<String> foodNames = new LinkedList<String>();
+    Button add_food_button;
+    Button submit_button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order_details);
-        imageView = findViewById(R.id.imageView);
-        location_name_view = findViewById(R.id.location_name);
-        rating_view = findViewById(R.id.rating);
+        add_food_button = findViewById(R.id.add_food_button);
+        submit_button = findViewById(R.id.submit_button);
+        // connect recyclerview to adapter
+        recyclerView = findViewById(R.id.recyclerview);
+        foodListAdapter = new FoodListAdapter(this, foodNames, foodPrices);
+        recyclerView.setAdapter(foodListAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        place = getIntent().getParcelableExtra("PLACE");
-        location_name_view.setText(place.getName());
-        rating_view.setText(String.valueOf(place.getRating()));
-        Log.d(TAG, "Name: "+place.getName());
-        // Access location photo
-        // Get the photo metadata.
-        final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-        if (metadata == null || metadata.isEmpty()) {
-            Log.w(TAG, "No photo metadata.");
-            return;
-        }
-        final PhotoMetadata photoMetadata = metadata.get(0);
-
-        // Get the attribution text.
-        final String attributions = photoMetadata.getAttributions();
-
-        // Create a FetchPhotoRequest.
-        final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
-//                .setMaxWidth(1000) // Optional.
-//                .setMaxHeight(300) // Optional.
-                .build();
-        PlacesClient placesClient = Places.createClient(this);
-        placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
-            Bitmap bitmap = fetchPhotoResponse.getBitmap();
-            imageView.setImageBitmap(bitmap);
-        }).addOnFailureListener((exception) -> {
-            if (exception instanceof ApiException) {
-                final ApiException apiException = (ApiException) exception;
-                Log.e(TAG, "Place not found: " + exception.getMessage());
-                final int statusCode = apiException.getStatusCode();
-                // TODO: Handle error with given status code.
+        add_food_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                openDialog();
             }
         });
+        submit_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "In submit click");
+            }
+        });
+
+    }
+
+    private void openDialog() {
+        AddFoodDialog addFoodDialog = new AddFoodDialog();
+        addFoodDialog.show(getSupportFragmentManager(), "Add food dialog");
+    }
+
+    @Override
+    // receive food details from AddFoodDialog
+    public void applyFoodDetails(String foodName, Double foodPrice) {
+        foodNames.add(foodName);
+        foodPrices.add(foodPrice);
+        foodListAdapter.notifyDataSetChanged();
     }
 }

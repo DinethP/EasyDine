@@ -19,11 +19,10 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     private double total;
 
-    class ValueViewHolder extends RecyclerView.ViewHolder{
-
+    class ValueViewHolder extends RecyclerView.ViewHolder {
         EditText value;
-
         ValueListAdapter valueListAdapter;
+
         public ValueViewHolder(@NonNull View itemView, ValueListAdapter valueListAdapter) {
             super(itemView);
             this.valueListAdapter = valueListAdapter;
@@ -32,7 +31,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     }
 
-    public ValueListAdapter(Context context){
+    public ValueListAdapter(Context context) {
         inflater = LayoutInflater.from(context);
     }
 
@@ -48,6 +47,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
         holder.value.addTextChangedListener(new TextWatcher() {
             final Context context = holder.value.getContext();
+
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -58,9 +58,9 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                 String s = charSequence.toString();
                 Intent intent = new Intent("update_value");
 
-                try{
+                try {
                     intent.putExtra("value", Double.parseDouble(s));
-                }catch(Exception e){
+                } catch (Exception e) {
                     intent.putExtra("value", 0.0);
                 }
 

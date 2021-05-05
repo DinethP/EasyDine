@@ -3,6 +3,7 @@ package edu.cuhk.csci3310.easydine;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
@@ -10,6 +11,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationManager;
 import android.media.audiofx.BassBoost;
@@ -22,9 +24,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -34,8 +39,10 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.TypeFilter;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
@@ -50,10 +57,14 @@ public class PlacesActivity extends AppCompatActivity {
     private String TAG = "PlacesActivity";
     Place place;
     EditText editText;
-    TextView textView1;
-    TextView textView2;
+    ConstraintLayout orderDettailsLayout;
+//    TextView textView1;
+//    TextView textView2;
     Button cancel_btn;
     Button next_btn;
+    ImageView imageView;
+    TextView location_name_view;
+    TextView rating_view;
     FusedLocationProviderClient fusedLocationProviderClient;
 
     @Override
@@ -65,12 +76,17 @@ public class PlacesActivity extends AppCompatActivity {
         Places.initialize(getApplicationContext(), apikey);
         // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(this);
-
+        imageView = findViewById(R.id.imageView);
+        location_name_view = findViewById(R.id.location_name);
+        rating_view = findViewById(R.id.rating);
         editText = findViewById(R.id.edit_text);
-        textView1 = findViewById(R.id.text_view1);
-        textView2 = findViewById(R.id.text_view2);
         cancel_btn = findViewById(R.id.cancel_btn);
         next_btn = findViewById(R.id.next_btn);
+        orderDettailsLayout = findViewById(R.id.orderDetailsLayout);
+
+        orderDettailsLayout.setVisibility(View.GONE);
+//        textView1 = findViewById(R.id.text_view1);
+//        textView2 = findViewById(R.id.text_view2);
         // next_btn will be disabled at start
         next_btn.setEnabled(false);
         editText.setFocusable(false);
@@ -201,10 +217,43 @@ public class PlacesActivity extends AppCompatActivity {
             editText.setText((place.getAddress()));
             Log.d(TAG, "Address: " + place.getAddress());
             // Set locality name
-            textView1.setText(String.format("Locality Namr: %s", place.getName()));
+//            textView1.setText(String.format("Locality Namr: %s", place.getName()));
             Log.d(TAG, "Name: " + place.getName());
             // set lat and lng
-            textView2.setText(String.valueOf(place.getLatLng()));
+//            textView2.setText(String.valueOf(place.getLatLng()));
+            location_name_view.setText(place.getName());
+            rating_view.setText(String.valueOf(place.getRating()));
+
+            // Access location photo
+            // Get the photo metadata.
+            final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+            if (metadata == null || metadata.isEmpty()) {
+                Log.w(TAG, "No photo metadata.");
+                return;
+            }
+            final PhotoMetadata photoMetadata = metadata.get(0);
+
+            // Get the attribution text.
+            final String attributions = photoMetadata.getAttributions();
+
+            // Create a FetchPhotoRequest.
+            final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
+//                .setMaxWidth(1000) // Optional.
+//                .setMaxHeight(300) // Optional.
+                    .build();
+            PlacesClient placesClient = Places.createClient(this);
+            placesClient.fetchPhoto(photoRequest).addOnSuccessListener((fetchPhotoResponse) -> {
+                Bitmap bitmap = fetchPhotoResponse.getBitmap();
+                imageView.setImageBitmap(bitmap);
+            }).addOnFailureListener((exception) -> {
+                if (exception instanceof ApiException) {
+                    final ApiException apiException = (ApiException) exception;
+                    Log.e(TAG, "Place not found: " + exception.getMessage());
+                    final int statusCode = apiException.getStatusCode();
+                    // TODO: Handle error with given status code.
+                }
+            });
+            orderDettailsLayout.setVisibility(View.VISIBLE);
         } else if (resultCode == AutocompleteActivity.RESULT_ERROR){
             Status status = Autocomplete.getStatusFromIntent(data);
             // display toast
