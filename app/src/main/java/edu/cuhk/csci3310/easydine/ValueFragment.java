@@ -55,7 +55,7 @@ public class ValueFragment extends Fragment {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
-
+            // update the remaining amount when the edit text field is updated
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
@@ -85,7 +85,8 @@ public class ValueFragment extends Fragment {
 
         return view;
     }
-
+    // get the updated amount from the recycler view
+    // and update the remaining amount
     public BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
 
         @Override
