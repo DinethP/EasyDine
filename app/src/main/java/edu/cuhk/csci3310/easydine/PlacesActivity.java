@@ -23,6 +23,18 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.PhotoMetadata;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
@@ -56,9 +68,7 @@ public class PlacesActivity extends AppCompatActivity {
         Places.initialize(getApplicationContext(), apikey);
         // Create a new PlacesClient instance
         PlacesClient placesClient = Places.createClient(this);
-        imageView = findViewById(R.id.imageView);
-        location_name_view = findViewById(R.id.location_name);
-        rating_view = findViewById(R.id.rating);
+
         editText = findViewById(R.id.edit_text);
         name = findViewById(R.id.name);
         location = findViewById(R.id.location);

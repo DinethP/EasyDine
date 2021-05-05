@@ -76,47 +76,46 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-<<<<<<< HEAD
-                android:text="TextView"
-=======
                 android:text="Rating"
+                android:textSize="18sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/location_name" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/rating">
+
+                <TextView
+                    android:id="@+id/participant_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:text="Participants:"
+                    android:layout_gravity="center"
+                    android:textSize="18sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/imageView" />
                 <RadioGroup
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
-<<<<<<< HEAD
-=======
->>>>>>> f49fa456ce5ef4174a51a1f24b12bf9ea81f8bdc
                     <RadioButton
                         android:id="@+id/radio_single"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< HEAD
-                        android:layout_marginHorizontal="10dp"
-                        android:paddingHorizontal="10dp"
-                        android:text="Single" />
-
-=======
                         android:text="Single"
                         android:layout_marginHorizontal="10dp"
                         android:paddingHorizontal="10dp"
                         />
->>>>>>> f49fa456ce5ef4174a51a1f24b12bf9ea81f8bdc
                     <RadioButton
                         android:id="@+id/radio_group"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-<<<<<<< HEAD
-                        android:layout_marginHorizontal="10dp"
-                        android:paddingHorizontal="10dp"
-                        android:text="Group" />
-                </RadioGroup>
-            </LinearLayout>
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </ScrollView>
-=======
                         android:text="Group"
                         android:layout_marginHorizontal="10dp"
                         android:paddingHorizontal="10dp"
@@ -136,7 +135,6 @@
         </LinearLayout>
     </ScrollView>
 
->>>>>>> f49fa456ce5ef4174a51a1f24b12bf9ea81f8bdc
 
     <Button
         android:id="@+id/next_btn"
@@ -154,11 +152,6 @@
         android:layout_height="wrap_content"
         android:text="Cancel"
         app:layout_constraintBottom_toBottomOf="parent"
-<<<<<<< HEAD
-        app:layout_constraintStart_toStartOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
-=======
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/next_btn"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
->>>>>>> f49fa456ce5ef4174a51a1f24b12bf9ea81f8bdc
