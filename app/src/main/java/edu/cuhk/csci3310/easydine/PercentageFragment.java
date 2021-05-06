@@ -43,6 +43,7 @@ public class PercentageFragment extends Fragment {
         percentageListAdapter = new PercentageListAdapter(view.getContext(), total);
         recyclerView.setAdapter(percentageListAdapter);
 
+        // get the amount users need to pay
         EditText amount = view.findViewById(R.id.amount);
         amount.setHint("Amount");
 
@@ -55,16 +56,19 @@ public class PercentageFragment extends Fragment {
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
+                // when the amount is changed, set up a new recyclerview
 
+                // if the field is empty, pass 0 to the recyclerview adapter
                 if(s.isEmpty()){
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0);
                     recyclerView.setAdapter(percentageListAdapter);
                 }
-
+                // if the field is not empty, pass the value to the adapter
                 try{
                     total = Double.parseDouble(s);
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), total);
                     recyclerView.setAdapter(percentageListAdapter);
+                // if error is encountered, pass 0 to the adapter
                 }catch (Exception e){
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0);
                     recyclerView.setAdapter(percentageListAdapter);
@@ -78,14 +82,6 @@ public class PercentageFragment extends Fragment {
             }
         });
 
-//        Button addButton = view.findViewById(R.id.add_button);
-
-//        addButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
         return view;
 
     }

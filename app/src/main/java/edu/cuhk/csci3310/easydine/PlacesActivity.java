@@ -6,6 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.location.Address;
+import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -25,6 +28,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.location.LocationListener;
+
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -34,19 +39,27 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.RectangularBounds;
 import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -54,9 +67,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentTransaction;
 
-public class PlacesActivity extends AppCompatActivity {
+public class PlacesActivity extends AppCompatActivity implements LocationListener {
     private String apikey = "AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
     private String TAG = "PlacesActivity";
+
+    private Location currentLocation;
+    private LocationListener locationListener;
+    private String input;
+
     Place place;
     EditText editText;
     TextView name, location, rating;
@@ -70,6 +88,10 @@ public class PlacesActivity extends AppCompatActivity {
     private final int singleOrder = 0;
     private final int groupOrder = 1;
     private boolean openUsersFragment = false;
+    LocationCallback locationCallback;
+    LocationRequest locationRequest;
+    LocationManager locationManager;
+    String countryCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,7 +127,7 @@ public class PlacesActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                // input = charSequence.toString();
             }
 
             // only enable next button if text has been entered to editText
@@ -115,15 +137,30 @@ public class PlacesActivity extends AppCompatActivity {
             }
         });
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(PlacesActivity.this);
+
         // check permission for location
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             // permission is granted
             Log.d(TAG, "onCreate: Permission granted");
-            getCurrentLocation();
+            // getCurrentLocation();
         } else {
             // when permission not granted, request permission
             ActivityCompat.requestPermissions(PlacesActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 100);
         }
+
+        //Get the last known location
+        currentLocation = getLastKnownLocation();
+
+        // get the country code of the user location
+        // restrict the suggestion range to one country
+        Geocoder geo = new Geocoder(this.getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> addresses = geo.getFromLocation(currentLocation.getLatitude(), currentLocation.getLongitude(), 1);
+            countryCode = addresses.get(0).getCountryCode();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Log.d(TAG, "Location: " + String.valueOf(currentLocation));
 
         editText.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -131,9 +168,19 @@ public class PlacesActivity extends AppCompatActivity {
                 // Intialise Place field list
                 List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,
                         Place.Field.LAT_LNG, Place.Field.NAME, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
+
+                // location bound: within 1km of users' current location
+                RectangularBounds rectangularBounds = RectangularBounds.newInstance(
+                        getCoordinate(currentLocation.getLatitude(), currentLocation.getLongitude(), -1000, -1000),
+                        getCoordinate(currentLocation.getLatitude(), currentLocation.getLongitude(), 1000, 1000)
+                );
+
                 //  create intent
                 Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fieldList)
+                        .setLocationBias(rectangularBounds) // show the restaurants within the bound first
+                        .setCountries(Collections.singletonList(countryCode))
                         .setTypeFilter(TypeFilter.ESTABLISHMENT)
+                        // .setInitialQuery(query)
                         // TODO: cannot filter only for restaurants
                         .build(PlacesActivity.this);
                 // Start activity for result
@@ -189,71 +236,20 @@ public class PlacesActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // TODO: Bug where even if permission is granted, it shows permission denied toast
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 100 && grantResults.length > 0 && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
             // when permission granted, call method
-            getCurrentLocation();
+            //getCurrentLocation();
         } else {
             // when permission is denied
             Toast.makeText(getApplicationContext(), "Permission denied", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void getCurrentLocation() {
-        Context context = this.getApplicationContext();
-        String[] permission = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        Activity activity = this;
-        LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
-            // location service is enabled get last location
-            // check if the permission is granted
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(activity, permission, 100);
-            }
-            fusedLocationProviderClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
-                @Override
-                public void onComplete(@NonNull Task<Location> task) {
-                    // initialise location
-                    Location location = task.getResult();
-                    if (location != null) {
-                        Log.d(TAG, String.valueOf(location.getLatitude()));
-                        Log.d(TAG, String.valueOf(location.getLongitude()));
-
-                    } else {
-                        // when location is null, make location requuest
-                        LocationRequest locationRequest = new LocationRequest()
-                                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                                .setInterval(10000)
-                                .setFastestInterval(1000)
-                                .setNumUpdates(1);
-                        // initialse location callback
-                        LocationCallback locationCallback = new LocationCallback() {
-                            @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                Location location1 = locationResult.getLastLocation();
-                                Log.d(TAG, String.valueOf(location1.getLatitude()));
-                                Log.d(TAG, String.valueOf(location1.getLongitude()));
-                            }
-                        };
-                        // request location updates
-                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                            ActivityCompat.requestPermissions(activity, permission, 100);
-                        }
-                        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper());
-
-                    }
-                }
-            });
-        }else{
-            // when location service is not enabled
-            // open location setting
-            startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 100 && resultCode == RESULT_OK){
+        if (requestCode == 100 && resultCode == RESULT_OK) {
             // Initialise place
             place = Autocomplete.getPlaceFromIntent(data);
 
@@ -272,7 +268,7 @@ public class PlacesActivity extends AppCompatActivity {
             // Get the attribution text.
             final String attributions = photoMetadata.getAttributions();
 
-            // Create a FetchPhotoRequest.
+            // Create a FetchPhotoRequest and set up the imageview
             final FetchPhotoRequest photoRequest = FetchPhotoRequest.builder(photoMetadata)
                     .setMaxHeight(600) // Optional.
                     .build();
@@ -305,6 +301,8 @@ public class PlacesActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             MapsFragment mapsFragment = new MapsFragment();
 
+            //get the location and address of the restaurant
+            //and pass it to the map fragment
             LatLng latlng = place.getLatLng();
             bundle.putParcelable("Location", latlng);
             bundle.putString("Address", place.getAddress());
@@ -317,10 +315,45 @@ public class PlacesActivity extends AppCompatActivity {
             // enable next button
             next_btn.setEnabled(true);
 
-        } else if (resultCode == AutocompleteActivity.RESULT_ERROR){
+        } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
             Status status = Autocomplete.getStatusFromIntent(data);
             // display toast
             Toast.makeText(getApplicationContext(), status.getStatusMessage(), Toast.LENGTH_SHORT).show();
         }
     }
+
+    public static LatLng getCoordinate(double lat0, double lng0, int dy, int dx) {
+        double lat = lat0 + (180 / Math.PI) * (dy / 6378137.0);
+        double lng = lng0 + (180 / Math.PI) * (dx / 6378137.0) / Math.cos(lat0);
+        return new LatLng(lat, lng);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        currentLocation = location;
+        Log.d(TAG, String.valueOf(location));
+    }
+
+    private Location getLastKnownLocation() {
+        locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = locationManager.getProviders(true);
+        Location bestLocation = null;
+
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                Location l = locationManager.getLastKnownLocation(provider);
+
+                if (l == null) {
+                    continue;
+                }
+                if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                    // Found best last known location: %s", l);
+                    bestLocation = l;
+                }
+            }
+
+        }
+        return bestLocation;
+    }
+
 }

@@ -41,6 +41,7 @@ public class EqualFragment extends Fragment {
         editText2.setHint("Description");
         editText3.setHint("Amount");
 
+        // calculate the amount equally
         cal_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

@@ -33,6 +33,7 @@ public class PayActivity extends AppCompatActivity {
                 View radioButton = radioGroup.findViewById(i);
                 int index = radioGroup.indexOfChild(radioButton);
                 switch (index){
+                    // equal pay
                     case 0:
                         EqualFragment equalFragment = new EqualFragment();
                         getSupportFragmentManager().beginTransaction()
@@ -40,6 +41,7 @@ public class PayActivity extends AppCompatActivity {
                                 .setReorderingAllowed(true)
                                 .commit();
                         break;
+                    // by percentage
                     case 1:
                         PercentageFragment percentageFragment = new PercentageFragment();
                         getSupportFragmentManager().beginTransaction()
@@ -47,6 +49,7 @@ public class PayActivity extends AppCompatActivity {
                                 .setReorderingAllowed(true)
                                 .commit();
                         break;
+                    // by exact value
                     case 2:
                         ValueFragment valueFragment = new ValueFragment();
                         getSupportFragmentManager().beginTransaction()

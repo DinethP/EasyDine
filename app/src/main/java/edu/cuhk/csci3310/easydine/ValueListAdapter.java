@@ -52,7 +52,8 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
-
+            // pass the amount to the fragment when the field is updated
+            // return 0 if error is encountered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();

@@ -26,8 +26,6 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     class PercentageViewHolder extends RecyclerView.ViewHolder{
 
-//        EditText name, percentage;
-//        Button addButton;
         EditText percentage;
         TextView amount;
 
@@ -38,18 +36,10 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
             this.percentageListAdapter = percentageListAdapter;
             percentage = itemView.findViewById(R.id.percentage);
             amount = itemView.findViewById(R.id.amount);
-//            name = itemView.findViewById(R.id.name);
-//            percentage = itemView.findViewById(R.id.percentage);
-//            addButton = itemView.findViewById(R.id.add_button);
 
         }
     }
 
-//    public PercentageListAdapter(Context context, LinkedList<String> nameList, LinkedList<Double> percentageList){
-//        mInflater = LayoutInflater.from(context);
-//        this.nameList = nameList;
-//        this.percentageList = percentageList;
-//    }
 
     public PercentageListAdapter(Context context, double total){
         mInflater = LayoutInflater.from(context);
@@ -70,7 +60,8 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
-
+            // the amount each person needs to pay will be updated instantly according to the input percentage
+            // print 0 if error is encountered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 try {
@@ -87,12 +78,6 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
             }
         });
-//        holder.addButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//            }
-//        });
 
 
     }
