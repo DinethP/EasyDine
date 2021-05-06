@@ -17,7 +17,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +51,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentTransaction;
 
 public class PlacesActivity extends AppCompatActivity {
     private String apikey = "AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
@@ -58,6 +62,11 @@ public class PlacesActivity extends AppCompatActivity {
     ImageView imageView;
     Button cancel_btn, next_btn;
     FusedLocationProviderClient fusedLocationProviderClient;
+    FrameLayout usersFrameLayout;
+    // integers to refer to showLocation or showRoute fragments
+    private final int singleOrder = 0;
+    private final int groupOrder = 1;
+    private boolean openUsersFragment = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +85,9 @@ public class PlacesActivity extends AppCompatActivity {
         cancel_btn = findViewById(R.id.cancel_btn);
         next_btn = findViewById(R.id.next_btn);
         imageView = findViewById(R.id.imageView);
+        usersFrameLayout = findViewById(R.id.usersFrameLayout);
+        usersFrameLayout.setVisibility(View.GONE);
+
 
         // next_btn will be disabled at start
         next_btn.setEnabled(false);
@@ -134,6 +146,29 @@ public class PlacesActivity extends AppCompatActivity {
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
                 intent.putExtra("PLACE", place);
                 startActivity(intent);
+            }
+        });
+        // default single order radio button is checked
+        RadioButton button = findViewById(R.id.radio_single);
+        button.setChecked(true);
+        // detect radiobutton checks
+        RadioGroup radioGroup = findViewById(R.id.particpantsGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                View radioButton = radioGroup.findViewById(i);
+                //  get index of which button was clicked
+                int index = radioGroup.indexOfChild(radioButton);
+                switch (index){
+                    case singleOrder:
+                        usersFrameLayout.setVisibility(View.GONE);
+                        break;
+                    case groupOrder:
+                        AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();
+                        getSupportFragmentManager().beginTransaction().add(R.id.usersFrameLayout, addParticipantsFragment, null).commit();
+                        usersFrameLayout.setVisibility(View.VISIBLE);
+                        break;
+                }
             }
         });
     }
@@ -267,8 +302,10 @@ public class PlacesActivity extends AppCompatActivity {
             bundle.putString("Address", place.getAddress());
             mapsFragment.setArguments(bundle);
 
-            getSupportFragmentManager().beginTransaction().add(R.id.map, mapsFragment, null).commit();
 
+            getSupportFragmentManager().beginTransaction().add(R.id.map, mapsFragment, null).commit();
+//            AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();
+//            getSupportFragmentManager().beginTransaction().add(R.id.usersFrameLayout, addParticipantsFragment, null).commit();
             // enable next button
             next_btn.setEnabled(true);
 

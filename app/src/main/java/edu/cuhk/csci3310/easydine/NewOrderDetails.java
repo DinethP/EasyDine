@@ -70,6 +70,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     public void applyFoodDetails(String foodName, Double foodPrice) {
         foodNames.add(foodName);
         foodPrices.add(foodPrice);
+        // notify recyclerview to update
         foodListAdapter.notifyDataSetChanged();
     }
 }
