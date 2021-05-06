@@ -21,6 +21,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +63,9 @@ public class PlacesActivity extends AppCompatActivity {
     ImageView imageView;
     Button cancel_btn, next_btn;
     FusedLocationProviderClient fusedLocationProviderClient;
+    ScrollView scrollView;
     FrameLayout usersFrameLayout;
+    FrameLayout mapFrameLayout;
     // integers to refer to showLocation or showRoute fragments
     private final int singleOrder = 0;
     private final int groupOrder = 1;
@@ -85,9 +88,12 @@ public class PlacesActivity extends AppCompatActivity {
         cancel_btn = findViewById(R.id.cancel_btn);
         next_btn = findViewById(R.id.next_btn);
         imageView = findViewById(R.id.imageView);
-        usersFrameLayout = findViewById(R.id.usersFrameLayout);
+        scrollView = findViewById(R.id.scroll_view);
+        scrollView.setVisibility(View.GONE);
+        usersFrameLayout = findViewById(R.id.users_frame_layout);
         usersFrameLayout.setVisibility(View.GONE);
-
+        mapFrameLayout = findViewById(R.id.map_frame_layout);
+        mapFrameLayout.setVisibility(View.GONE);
 
         // next_btn will be disabled at start
         next_btn.setEnabled(false);
@@ -165,7 +171,7 @@ public class PlacesActivity extends AppCompatActivity {
                         break;
                     case groupOrder:
                         AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();
-                        getSupportFragmentManager().beginTransaction().add(R.id.usersFrameLayout, addParticipantsFragment, null).commit();
+                        getSupportFragmentManager().beginTransaction().add(R.id.users_frame_layout, addParticipantsFragment, null).commit();
                         usersFrameLayout.setVisibility(View.VISIBLE);
                         break;
                 }
@@ -282,7 +288,9 @@ public class PlacesActivity extends AppCompatActivity {
                     // TODO: Handle error with given status code.
                 }
             });
-
+            // set views to be visisble
+            scrollView.setVisibility(View.VISIBLE);
+            mapFrameLayout.setVisibility(View.VISIBLE);
             // set name
             name.setText(String.format("Name: %s", place.getName()));
 
