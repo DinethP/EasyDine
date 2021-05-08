@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,11 +19,20 @@ import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPhotoRequest;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.DocumentTransform;
 
 import java.lang.reflect.Array;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener{
     private String TAG = "NewOrderActivity";
@@ -31,6 +41,8 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private RecyclerView recyclerView;
     private LinkedList<Double> foodPrices = new LinkedList<Double>();
     private LinkedList<String> foodNames = new LinkedList<String>();
+    private FirebaseFirestore mDatabase;
+
     Button add_food_button;
     Button submit_button;
     @Override
@@ -45,6 +57,9 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         recyclerView.setAdapter(foodListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        Bundle bundle = getIntent().getExtras();
+        place = bundle.getParcelable("PLACE");
+
         add_food_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -54,6 +69,18 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                mDatabase = FirebaseFirestore.getInstance();
+                CollectionReference orders = mDatabase.collection("orders");
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                String restaurantName = place.getName();
+                String userID = user.getEmail();
+                double sum = getSum(foodPrices);
+                LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
+                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+                Order order = new Order(userID, restaurantName, sum, timeStamp, friends);
+                orders.add(order);
                 Log.d(TAG, "In submit click");
             }
         });
@@ -72,5 +99,13 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         foodPrices.add(foodPrice);
         // notify recyclerview to update
         foodListAdapter.notifyDataSetChanged();
+    }
+
+    public double getSum(LinkedList<Double> foodPrices){
+        double sum = 0.0;
+        for(Double price : foodPrices){
+            sum += price;
+        }
+        return sum;
     }
 }

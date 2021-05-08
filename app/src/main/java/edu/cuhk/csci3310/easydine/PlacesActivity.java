@@ -165,7 +165,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
         editText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Intialise Place field list
+                // Initialise Place field list
                 List<Place.Field> fieldList = Arrays.asList(Place.Field.ADDRESS,
                         Place.Field.LAT_LNG, Place.Field.NAME, Place.Field.RATING, Place.Field.PHOTO_METADATAS);
 
@@ -334,6 +334,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
         Log.d(TAG, String.valueOf(location));
     }
 
+    // get user last known location
     private Location getLastKnownLocation() {
         locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
         List<String> providers = locationManager.getProviders(true);
