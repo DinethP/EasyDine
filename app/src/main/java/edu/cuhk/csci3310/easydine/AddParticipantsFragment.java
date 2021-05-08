@@ -27,7 +27,7 @@ public class AddParticipantsFragment extends Fragment {
     private String TAG = "AddParticipantFragment";
     private RecyclerView recyclerView;
     private UserListAdapter userListAdapter;
-    private LinkedList<String> userNames = new LinkedList<String>();
+    private LinkedList<User> userNames = new LinkedList<User>();
 
     // Access a Cloud Firestore instance from your Activity
     FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -45,7 +45,8 @@ public class AddParticipantsFragment extends Fragment {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
-                        userNames.add(document.getString("userName"));
+//                        userNames.add(document.getString("userName"));
+                        userNames.add(document.toObject(User.class));
                     }
                     // firestore takes time to load, so names get after view is created
                     // so notify adpater to show  updated names
@@ -61,5 +62,10 @@ public class AddParticipantsFragment extends Fragment {
         recyclerView.setAdapter(userListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
+    }
+
+    // send selected particpants linkedlist from userListAdapter to PlacesActivity
+    public LinkedList<User> getSelectedParticpants(){
+        return userListAdapter.getSelectedParticpants();
     }
 }
