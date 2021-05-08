@@ -92,6 +92,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
     LocationRequest locationRequest;
     LocationManager locationManager;
     String countryCode;
+    AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -197,6 +198,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
+                intent.putExtra("PARTICIPANTS", addParticipantsFragment.getSelectedParticpants());
                 intent.putExtra("PLACE", place);
                 startActivity(intent);
             }
@@ -217,7 +219,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                         usersFrameLayout.setVisibility(View.GONE);
                         break;
                     case groupOrder:
-                        AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();
+                        addParticipantsFragment = new AddParticipantsFragment();
                         getSupportFragmentManager().beginTransaction().add(R.id.users_frame_layout, addParticipantsFragment, null).commit();
                         usersFrameLayout.setVisibility(View.VISIBLE);
                         break;

@@ -7,14 +7,14 @@
     android:layout_height="wrap_content"
     android:id="@+id/user_layout">
 
-    <CheckedTextView
-        android:id="@+id/checkedTextView"
+    <TextView
+        android:id="@+id/text_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="CheckedTextView"
-        android:gravity="center_horizontal"
         android:checkMark="?android:attr/listChoiceIndicatorMultiple"
-        android:textSize="24sp"
+        android:gravity="center_horizontal"
+        android:text="CheckedTextView"
+        android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
         tools:layout_editor_absoluteY="8dp" />
 
