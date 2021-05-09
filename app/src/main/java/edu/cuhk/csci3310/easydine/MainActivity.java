@@ -35,11 +35,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private String TAG = "MainActivity";
     private String KEY = "isLoggedIn";
     private String preferencesName = "UserDetails";
+    public String accountDisplayName;
 
     private RecyclerView mRecyclerView;
     private CardListAdapter mAdapter;
 
-    private LinkedList<String> mCardName = new LinkedList<>(Arrays.asList("New Order", "Past Order", "Orders to Pay", "Orders to Receive", "Bus", "Train"));
+    private LinkedList<String> mCardName = new LinkedList<>(Arrays.asList("New Order", "Past Orders", "Split Bill", "Analytics", "About Us!", "Coming Soon"));
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
@@ -53,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sharedPreferences = getApplicationContext().getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_main);
         FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
+        accountDisplayName = account.getEmail();
         ImageView profilePic = findViewById(R.id.profilePic);
         TextView title = findViewById(R.id.greeting);
         title.setText("Hello " + account.getDisplayName());
@@ -80,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // set up recyclerview
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new CardListAdapter(this, mCardName);
+        mAdapter = new CardListAdapter(this, mCardName, accountDisplayName);
         mRecyclerView.setAdapter(mAdapter);
 
 

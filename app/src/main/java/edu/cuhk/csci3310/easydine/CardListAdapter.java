@@ -13,13 +13,15 @@ import java.util.LinkedList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardViewHolder> {
 
     private LayoutInflater mInflater;
     private final LinkedList<String> mCardNameList;
     // intent for card item clicks
     Intent intent;
-
+    String accountName;
 
     class CardViewHolder extends RecyclerView.ViewHolder{
 
@@ -36,9 +38,10 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
         }
     }
 
-    public CardListAdapter(Context context, LinkedList<String> cardNameList){
+    public CardListAdapter(Context context, LinkedList<String> cardNameList, String accountDisplayName){
         mInflater = LayoutInflater.from(context);
         this.mCardNameList = cardNameList;
+        this.accountName = accountDisplayName;
     }
 
     @NonNull
@@ -64,6 +67,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                     // 2nd card: view order history
                     case 1:
                         intent = new Intent(view.getContext(), PastOrdersActivity.class);
+                        intent.putExtra("accountName", accountName);
                         view.getContext().startActivity(intent);
                         break;
                     // 3rd card: split bill function

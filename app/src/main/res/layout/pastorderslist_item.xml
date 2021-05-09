@@ -88,5 +88,16 @@
             app:layout_constraintStart_toEndOf="@id/pastOrdersFriendsLabel"
             app:layout_constraintTop_toBottomOf="@id/pastOrdersDate" />
 
+        <Button
+            android:id="@+id/markPayedBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/mark_as_payed"
+            android:onClick="markPayed"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/pastOrdersImageView"
+            app:layout_constraintTop_toBottomOf="@id/pastOrdersDate"
+            />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>
