@@ -1,6 +1,7 @@
 package edu.cuhk.csci3310.easydine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import java.util.LinkedList;
 
 import androidx.annotation.NonNull;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAdapter.PercentageViewHolder>{
@@ -23,6 +25,8 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     private LinkedList<Double> percentageList = new LinkedList<>();
 
     private double total;
+    private double previous;
+    private int persons;
 
     class PercentageViewHolder extends RecyclerView.ViewHolder{
 
@@ -41,9 +45,10 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     }
 
 
-    public PercentageListAdapter(Context context, double total){
+    public PercentageListAdapter(Context context, double total, int persons){
         mInflater = LayoutInflater.from(context);
         this.total = total;
+        this.persons = persons;
     }
 
     @NonNull
@@ -56,26 +61,39 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     @Override
     public void onBindViewHolder(@NonNull PercentageViewHolder holder, int position) {
         holder.percentage.addTextChangedListener(new TextWatcher() {
+            final Context context = holder.percentage.getContext();
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String s = charSequence.toString();
+                try{
+                    previous = Double.parseDouble(s);
+                }catch (Exception e){
+                    previous = 0;
+                }
 
             }
             // the amount each person needs to pay will be updated instantly according to the input percentage
             // print 0 if error is encountered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                try {
-                    String s = charSequence.toString();
-                    double value = Double.parseDouble(s) / 100 * total;
-                    holder.amount.setText(String.format("%.1f", value));
-                }catch (Exception e){
-                    holder.amount.setText(String.format("%.1f", 0.0));
-                }
+
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                Intent intent = new Intent("update_percentage");
+                try {
+                    String s = editable.toString();
+                    double value = Double.parseDouble(s) / 100 * total;
+                    holder.amount.setText(String.format("%.1f", value));
+                    intent.putExtra("PERCENTAGE", Double.parseDouble(s));
+                    intent.putExtra("PREVIOUS", previous);
+                }catch (Exception e){
+                    holder.amount.setText(String.format("%.1f", 0.0));
+                    intent.putExtra("PERCENTAGE", 0.0);
+                    intent.putExtra("PREVIOUS", previous);
+                }
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
         });
 
@@ -88,6 +106,6 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public int getItemCount() {
-        return 6;
+        return persons+1;
     }
 }

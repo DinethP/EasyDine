@@ -19,9 +19,14 @@ public class EqualFragment extends Fragment {
     private String description;
     private double amount;
 
+    private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
+    private String SPILT_COUNT_TAG = "SPILT_COUNT";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
     }
 
@@ -29,6 +34,15 @@ public class EqualFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        if (getArguments() != null){
+            amount = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
+            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
+        }
+        else{
+            amount = 0;
+            persons = 1;
+        }
+
         final View view = inflater.inflate(R.layout.fragment_equal, container, false);
 
         EditText editText1 = (EditText) view.findViewById(R.id.number_of_customers);
@@ -40,6 +54,9 @@ public class EqualFragment extends Fragment {
         editText1.setHint("No. of people");
         editText2.setHint("Description");
         editText3.setHint("Amount");
+
+        editText1.setText(String.valueOf(persons+1));
+        editText3.setText(String.valueOf(amount));
 
         // calculate the amount equally
         cal_button.setOnClickListener(new View.OnClickListener() {

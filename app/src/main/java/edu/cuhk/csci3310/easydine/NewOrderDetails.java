@@ -40,6 +40,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.Math.max;
+
 public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener{
     private String TAG = "NewOrderActivity";
     private Place place;
@@ -52,6 +54,8 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private ArrayList<User> selectedUser = new ArrayList<>();
     private ListView particpantsList;
     private FirebaseFirestore mDatabase;
+    private String AMOUNT_TAG = "AMOUNT";
+    private String COUNT_TAG = "COUNT";
 
     Button add_food_button;
     Button submit_button;
@@ -117,10 +121,16 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
                 Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
-                orders.add(order);
+                // orders.add(order);
 
-                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
-                toast.show();
+                Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
+
+                intent.putExtra(AMOUNT_TAG, sum);
+                intent.putExtra(COUNT_TAG, max(selectedUser.size(), 1));
+                startActivity(intent);
+
+//                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
+//                toast.show();
             }
         });
 
