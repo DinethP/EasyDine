@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -43,10 +45,18 @@ public class AddParticipantsFragment extends Fragment {
         db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                // get currentUserId
+                String currUserUid = user.getUid();
                 if(task.isSuccessful()){
                     for (QueryDocumentSnapshot document : task.getResult()){
-//                        userNames.add(document.getString("userName"));
-                        userNames.add(document.toObject(User.class));
+                        // add all users except current user
+                        if(document.getId().equals(currUserUid)) {
+                            continue;
+                        }
+                        else {
+                            userNames.add(document.toObject(User.class));
+                        }
                     }
                     // firestore takes time to load, so names get after view is created
                     // so notify adpater to show  updated names
