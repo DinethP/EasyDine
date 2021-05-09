@@ -60,19 +60,27 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
             @Override
             public void onClick(View view) {
                 switch (position){
+                    // 1st card: new order
                     case 0:
                         intent = new Intent(view.getContext(), PlacesActivity.class);
                         view.getContext().startActivity(intent);
                         break;
-                    // 2nd card: view order history
+                    // 2nd card: past orders
                     case 1:
                         intent = new Intent(view.getContext(), PastOrdersActivity.class);
                         intent.putExtra("accountName", accountName);
                         view.getContext().startActivity(intent);
                         break;
-                    // 3rd card: split bill function
+                    // 3rd card: split bill
                     case 2:
                         intent = new Intent(view.getContext(), PayActivity.class);
+                        view.getContext().startActivity(intent);
+                        break;
+                    // 4th card: analytics
+                    case 3:
+                        intent = new Intent(view.getContext(), AnalyticsActivity.class);
+                        intent.putExtra("accountName", accountName);
+                        intent.putExtra("graph", 1);
                         view.getContext().startActivity(intent);
                         break;
                 }

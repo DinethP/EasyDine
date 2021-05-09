@@ -26,6 +26,7 @@
         -->
         <activity android:name=".NewOrderDetails" />
         <activity android:name=".PastOrdersActivity"/>
+        <activity android:name=".AnalyticsActivity"/>
         <activity android:name=".PlacesActivity" />
         <activity android:name=".PayActivity" />
         <activity android:name=".MyProfile" />
