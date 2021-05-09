@@ -55,6 +55,7 @@ import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.Collections;
@@ -73,7 +74,6 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
 
     private Location currentLocation;
     private LocationListener locationListener;
-    private String input;
 
     Place place;
     EditText editText;
@@ -128,7 +128,6 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                // input = charSequence.toString();
             }
 
             // only enable next button if text has been entered to editText
@@ -198,7 +197,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
-                intent.putExtra("PARTICIPANTS", addParticipantsFragment.getSelectedParticpants());
+                intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
                 intent.putExtra("PLACE", place);
                 startActivity(intent);
             }
