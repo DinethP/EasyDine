@@ -14,6 +14,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "580005342570-gvnb775gfbjf457k3udunl3ccj5mp0rc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.cuhk.csci3310.easydine",
+            "certificate_hash": "4d022062ab0e9af96de49bc4a0ea4cc279c90931"
+          }
+        },
+        {
+          "client_id": "580005342570-pcf3a1c183k12ucghanf3vurp7u0378h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.cuhk.csci3310.easydine",
+            "certificate_hash": "d194d0c8c62f3c5f807871d6c0e99a94011a57e9"
+          }
+        },
+        {
+          "client_id": "580005342570-q85e11u8aggvmih61ue2dgjo2akgns35.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "edu.cuhk.csci3310.easydine",
+            "certificate_hash": "89ce893456dd1ce91bfb16585ecdba9a33d99051"
+          }
+        },
+        {
           "client_id": "580005342570-lk35qtq51i15268mtcsdkibi2p726g8h.apps.googleusercontent.com",
           "client_type": 3
         }

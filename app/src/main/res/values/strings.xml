@@ -102,4 +102,7 @@
         "For example, position the FAB to one side of stream of a cards so the FAB won’t interfere "
         "when a user tries to pick up one of cards.\n\n"
     </string>
+    <string name="restaurant_label">Restaurant:</string>
+    <string name="date_label">Date:</string>
+    <string name="friends_label">Friends:</string>
 </resources>
