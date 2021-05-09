@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="PastOrdersActivity">
-
+    
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pastOrdersRecyclerView"
         android:background="@color/white"

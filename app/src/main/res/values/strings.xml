@@ -104,7 +104,7 @@
     </string>
     <string name="restaurant_label">Restaurant:</string>
     <string name="date_label">Date:</string>
-    <string name="friends_label">Friends:</string>
-    <string name="no_orders_to_show">No Orders to Show...</string>
-    <string name="mark_as_payed">Mark as Payed</string>
+    <string name="friends_label"># of Friends:</string>
+    <string name="no_orders_to_show">No Orders to Show…</string>
+    <string name="mark_as_payed">Mark as Paid</string>
 </resources>

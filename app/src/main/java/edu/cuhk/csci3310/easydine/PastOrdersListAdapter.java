@@ -11,24 +11,32 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.LinkedList;
+
+import io.perfmark.Link;
 
 public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAdapter.PastOrdersViewHolder> {
     private Context context;
     private LayoutInflater mInflater;
 
+    private final LinkedList<String> mOrderIdList;
     private final LinkedList<String> mRestaurantImageList;
     private final LinkedList<String> mRestaurantNameList;
     private final LinkedList<String> mDateList;
     private final LinkedList<Integer> mFriendsList;
+    private final LinkedList<Boolean> mPayedList;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Implement OnClickListener to allow for master-detail navigation
     class PastOrdersViewHolder extends RecyclerView.ViewHolder
@@ -36,6 +44,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
 
         ImageView restaurantImageView;
         TextView nameTextView, dateTextView, friendsTextView;
+        Button isPayedButton;
 
         final PastOrdersListAdapter mAdapter;
 
@@ -45,6 +54,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
             nameTextView = itemView.findViewById(R.id.pastOrdersRestaurantName);
             dateTextView = itemView.findViewById(R.id.pastOrdersDate);
             friendsTextView = itemView.findViewById(R.id.pastOrdersFriends);
+            isPayedButton = itemView.findViewById(R.id.isPayedBtn);
             this.mAdapter = adapter;
 
             // Event handling registration, page navigation goes here
@@ -58,19 +68,16 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
     }
 
 
-    public PastOrdersListAdapter(Context context, LinkedList<String> restaurantImageList, LinkedList<String> restaurantNameList,
-                                 LinkedList<String> dateList, LinkedList<Integer> friendsList) {
+    public PastOrdersListAdapter(Context context, LinkedList<String> orderIdList, LinkedList<String> restaurantImageList, LinkedList<String> restaurantNameList,
+                                 LinkedList<String> dateList, LinkedList<Integer> friendsList, LinkedList<Boolean> payedList) {
 
         mInflater = LayoutInflater.from(context);
+        this.mOrderIdList = orderIdList;
         this.mRestaurantImageList = restaurantImageList;
         this.mRestaurantNameList = restaurantNameList;
         this.mDateList = dateList;
         this.mFriendsList = friendsList;
-    }
-
-    // Called when the UpdatePastOrders Activity returns
-    public void updateAdapter(String name, String genus, int richness, int pos) {
-        notifyDataSetChanged();
+        this.mPayedList = payedList;
     }
 
     @NonNull
@@ -83,16 +90,32 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
     @Override
     public void onBindViewHolder(@NonNull PastOrdersViewHolder holder, int position) {
         // Update the following to display correct information based on the given position
+        String orderId = mOrderIdList.get(position);
         String mImageURL = mRestaurantImageList.get(position);
         String mRestaurantName = mRestaurantNameList.get(position);
         String mDate = mDateList.get(position);
         int mFriends = mFriendsList.get(position);
+        Boolean mIsPayed = mPayedList.get(position);
 
         // Set up View items for this row (position)
         new DownloadImageTask(holder.restaurantImageView).execute(mImageURL);
         holder.nameTextView.setText(mRestaurantName);
         holder.dateTextView.setText(mDate);
         holder.friendsTextView.setText(Integer.toString(mFriends));
+        if (mIsPayed) {
+            holder.isPayedButton.setText("Already Paid");
+            holder.isPayedButton.setEnabled(false);
+        }
+        else {
+            holder.isPayedButton.setEnabled(true);
+        }
+        holder.isPayedButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                db.collection("orders").document(orderId).update("isPayed", true);
+                mPayedList.set(position, true);
+                notifyDataSetChanged();
+            }
+        });
     }
 
     public long getItemId(int position) {

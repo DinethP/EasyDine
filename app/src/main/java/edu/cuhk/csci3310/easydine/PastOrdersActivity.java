@@ -29,6 +29,7 @@ public class PastOrdersActivity extends AppCompatActivity {
     private String TAG = "PastOrdersActivity";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    private final LinkedList<String> mOrderIdList = new LinkedList<>();
     private final LinkedList<String> mRestaurantImageList = new LinkedList<>();
     private final LinkedList<String> mRestaurantNameList = new LinkedList<>();
     private final LinkedList<String> mDateList = new LinkedList<>();
@@ -54,11 +55,13 @@ public class PastOrdersActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     for (QueryDocumentSnapshot document : task.getResult()) {
+                        mOrderIdList.add(document.getId());
                         mRestaurantImageList.add(document.get("imageURL").toString());
                         mRestaurantNameList.add(document.get("restaurant").toString());
                         mDateList.add(document.get("orderTime").toString());
                         List<String> friends = (List<String>) document.get("friends");
                         mFriendsList.add(friends.size());
+                        mPayedList.add((Boolean) document.get("isPayed"));
                     }
 
                     // Firestore takes time to load, so names get after view is created
@@ -74,16 +77,12 @@ public class PastOrdersActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.pastOrdersRecyclerView);
 
         // Create an adapter and supply the data to be displayed
-        mAdapter = new PastOrdersListAdapter(this, mRestaurantImageList, mRestaurantNameList, mDateList, mFriendsList);
+        mAdapter = new PastOrdersListAdapter(this, mOrderIdList, mRestaurantImageList, mRestaurantNameList, mDateList, mFriendsList, mPayedList);
 
         // Connect the adapter with the RecyclerView.
         mRecyclerView.setAdapter(mAdapter);
 
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-    }
-
-    public void markPayed(View view) {
-        Log.d("TEST", "Whats poppin");
     }
 }
