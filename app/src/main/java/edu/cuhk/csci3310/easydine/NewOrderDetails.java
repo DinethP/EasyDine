@@ -46,6 +46,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private LinkedList<String> foodNames = new LinkedList<String>();
     private ArrayList<User> selectedParticipants;
     private ArrayList<String> participantNames = new ArrayList<String>();
+    private ArrayList<User> selectedUser = new ArrayList<>();
     private ListView particpantsList;
     private FirebaseFirestore mDatabase;
 
@@ -82,6 +83,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 
         Bundle bundle = getIntent().getExtras();
         place = bundle.getParcelable("PLACE");
+        selectedUser = (ArrayList<User>) bundle.getSerializable("PARTICIPANTS");
 
         add_food_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,6 +91,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 openDialog();
             }
         });
+
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -99,10 +102,11 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 String restaurantName = place.getName();
                 String userID = user.getEmail();
                 double sum = getSum(foodPrices);
-                LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
+                // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
+
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                Order order = new Order(userID, restaurantName, sum, timeStamp, friends);
+                Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices);
                 orders.add(order);
                 Log.d(TAG, "In submit click");
             }
