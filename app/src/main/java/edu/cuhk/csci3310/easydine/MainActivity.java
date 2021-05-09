@@ -1,19 +1,29 @@
 package edu.cuhk.csci3310.easydine;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,6 +36,13 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -46,13 +63,85 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
     Toolbar toolbar;
     SharedPreferences sharedPreferences;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+
+    private String CHANNEL_ID = "channelId";
+    private String CHANNEL_NAME = "channelName";
+    private int NOTIFICATION_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         sharedPreferences = getApplicationContext().getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_main);
+
+        // create notification channel
+        createNotificationChannel();
+        // create pending intent so that clicking the notification will open the activity
+        Intent intent = new Intent(this, LoginActivity.class);
+        PendingIntent pendingIntent = TaskStackBuilder.create(this)
+                .addNextIntentWithParentStack(intent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle("Marked as paid")
+                .setContentText("Context text")
+                .setSmallIcon(R.drawable.ic_notification)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent)
+                .build();
+
+        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
+
+        TextView dashTitle = findViewById(R.id.textView);
+        dashTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                notificationManager.notify(NOTIFICATION_ID, notification);
+            }
+        });
+
+        db.collection("orders")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots,
+                                        @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("TAG", "listen:error", e);
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    Log.d(TAG, "New document added");
+                                    break;
+                                case MODIFIED:
+                                    Log.d(TAG, "Modified document: " + dc.getDocument());
+                                    // create notification
+                                    // this is a hack solution because firestore doesm'y allow to listen for field changes, only whole document changes
+                                    // since the only time a document will be modified is to mark as true, this is  correct
+                                    Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                            .setContentTitle("Marked as paid")
+                                            .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setContentIntent(pendingIntent)
+                                            .build();
+
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                                    notificationManager.notify(NOTIFICATION_ID, notification);
+                                    break;
+                                case REMOVED:
+                                    Log.d(TAG, "Removed document");
+                                    break;
+                            }
+                        }
+
+                    }
+                });
+
         FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
         accountDisplayName = account.getEmail();
         ImageView profilePic = findViewById(R.id.profilePic);
@@ -118,5 +207,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
     }
 }

@@ -60,7 +60,6 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order_details);
 
-        //        selectedParticipants = (LinkedList<User>) getIntent().getExtras().get("PARTICIPANTS");
         selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
         Log.d(TAG, "Selected participants in NewOrderDetails: " + selectedParticipants.toString());
 
@@ -121,6 +120,9 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 
                 Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
                 toast.show();
+                Intent intent = new Intent(NewOrderDetails.this, MainActivity.class);
+                intent.putExtra("ACCOUNT", user);
+                startActivity(intent);
             }
         });
 
