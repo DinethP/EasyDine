@@ -2,6 +2,7 @@ package edu.cuhk.csci3310.easydine;
 
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -60,12 +61,16 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                         intent = new Intent(view.getContext(), PlacesActivity.class);
                         view.getContext().startActivity(intent);
                         break;
+                    // 2nd card: view order history
+                    case 1:
+                        intent = new Intent(view.getContext(), PastOrdersActivity.class);
+                        view.getContext().startActivity(intent);
+                        break;
                     // 3rd card: split bill function
                     case 2:
                         intent = new Intent(view.getContext(), PayActivity.class);
                         view.getContext().startActivity(intent);
                         break;
-
                 }
 
             }
