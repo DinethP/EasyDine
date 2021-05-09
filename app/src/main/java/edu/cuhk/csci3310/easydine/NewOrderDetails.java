@@ -1,6 +1,5 @@
 package edu.cuhk.csci3310.easydine;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -8,18 +7,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -29,8 +25,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.DocumentTransform;
 
 import java.lang.reflect.Array;
@@ -50,17 +44,34 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private RecyclerView recyclerView;
     private LinkedList<Double> foodPrices = new LinkedList<Double>();
     private LinkedList<String> foodNames = new LinkedList<String>();
-    private LinkedList<Dish> dishes = new LinkedList<>();
-    private ArrayList<User> selectedUser = new ArrayList<>();
+    private ArrayList<User> selectedParticipants;
+    private ArrayList<String> participantNames = new ArrayList<String>();
+    private ListView particpantsList;
     private FirebaseFirestore mDatabase;
 
     Button add_food_button;
     Button submit_button;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order_details);
+
+        //        selectedParticipants = (LinkedList<User>) getIntent().getExtras().get("PARTICIPANTS");
+        selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
+        Log.d(TAG, "Selected participants in NewOrderDetails: " + selectedParticipants.toString());
+
+        // extract names from User objects
+        for(User user : selectedParticipants){
+            participantNames.add(user.getUserName());
+        }
+
+        particpantsList = findViewById(R.id.participants_view);
+        // convert arraylist to string
+        String[] namesArray = (String[]) participantNames.toArray(new String[0]);
+        particpantsList.setAdapter(new ArrayAdapter<String>(NewOrderDetails.this, R.layout.participantslist_item, R.id.text_name, namesArray));
+        add_food_button = findViewById(R.id.add_food_button);
+        submit_button = findViewById(R.id.submit_button);
+
         add_food_button = findViewById(R.id.add_food_button);
         submit_button = findViewById(R.id.submit_button);
         // connect recyclerview to adapter
@@ -71,7 +82,6 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 
         Bundle bundle = getIntent().getExtras();
         place = bundle.getParcelable("PLACE");
-        selectedUser = (ArrayList<User>) bundle.getSerializable("PARTICIPANTS");
 
         add_food_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +89,6 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 openDialog();
             }
         });
-
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -90,13 +99,11 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 String restaurantName = place.getName();
                 String userID = user.getEmail();
                 double sum = getSum(foodPrices);
-                //LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
+                LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices);
+                Order order = new Order(userID, restaurantName, sum, timeStamp, friends);
                 orders.add(order);
-                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
-                toast.show();
                 Log.d(TAG, "In submit click");
             }
         });
@@ -124,6 +131,4 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         }
         return sum;
     }
-
-
 }
