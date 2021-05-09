@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.libraries.places.api.Places;
@@ -36,6 +37,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener{
     private String TAG = "NewOrderActivity";
@@ -100,15 +103,24 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                 String restaurantName = place.getName();
+                List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                final PhotoMetadata photoMetadata = metadata.get(0);
+                // Log.d("photoMetadata",photoMetadata.toString());
+                // Log.d("photoMetadata", getPhotoRef(photoMetadata.toString()));
+
+                // get photo url from place api
+                String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + getPhotoRef(photoMetadata.toString()) + "&key=AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
                 String userID = user.getEmail();
                 double sum = getSum(foodPrices);
                 // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
 
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices);
+                Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL);
                 orders.add(order);
-                Log.d(TAG, "In submit click");
+
+                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
+                toast.show();
             }
         });
 
@@ -134,5 +146,14 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
             sum += price;
         }
         return sum;
+    }
+
+    // get photo reference from regex
+    public String getPhotoRef(String mataData){
+        Pattern pattern = Pattern.compile("(?<=, photoReference=).*");
+        Matcher matcher = pattern.matcher(mataData);
+        matcher.find();
+        String result = matcher.group(0);
+        return result.substring(0, result.length()-1);
     }
 }

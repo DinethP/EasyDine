@@ -10,11 +10,12 @@ public class Order {
     public ArrayList<User> friends;
     public LinkedList<String> dishes;
     public LinkedList<Double> prices;
+    public String imageURL;
 
     public Order(){
     }
 
-    public Order(String userID, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices){
+    public Order(String userID, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL){
         this.amount = amount;
         this.orderTime = orderTime;
         this.restaurant = restaurant;
@@ -22,6 +23,7 @@ public class Order {
         this.friends = friends;
         this.dishes = dishes;
         this.prices = prices;
+        this.imageURL = imageURL;
     }
 
 }

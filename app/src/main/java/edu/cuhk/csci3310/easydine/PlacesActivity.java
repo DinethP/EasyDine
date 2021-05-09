@@ -260,6 +260,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
 
             //set photo
             final List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+
             if (metadata == null || metadata.isEmpty()) {
                 Log.w(TAG, "No photo metadata.");
                 return;
