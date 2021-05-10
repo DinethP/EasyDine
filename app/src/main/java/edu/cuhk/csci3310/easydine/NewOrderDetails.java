@@ -56,6 +56,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private FirebaseFirestore mDatabase;
     private String AMOUNT_TAG = "AMOUNT";
     private String COUNT_TAG = "COUNT";
+    private boolean isSingle = true;
 
     Button add_food_button;
     Button submit_button;
@@ -63,13 +64,14 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order_details);
-
-        selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
-        Log.d(TAG, "Selected participants in NewOrderDetails: " + selectedParticipants.toString());
-
-        // extract names from User objects
-        for(User user : selectedParticipants){
-            participantNames.add(user.getUserName());
+        if(!getIntent().getBooleanExtra("FLAG", false)){
+            selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
+            Log.d(TAG, "Selected participants in NewOrderDetails: " + selectedParticipants.toString());
+            // extract names from User objects
+            for(User user : selectedParticipants){
+                participantNames.add(user.getUserName());
+            }
+            isSingle = false;
         }
 
         particpantsList = findViewById(R.id.participants_view);
@@ -119,14 +121,24 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 
                 String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
-                orders.add(order);
 
-                Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
 
-                intent.putExtra(AMOUNT_TAG, sum);
-                intent.putExtra(COUNT_TAG, max(selectedUser.size(), 1));
-                startActivity(intent);
+
+                if(isSingle){
+                    Intent intent = new Intent(NewOrderDetails.this, PastOrdersActivity.class);
+                    Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, true);
+                    orders.add(order);
+                    intent.putExtra("accountName", userID);
+                    startActivity(intent);
+                } else{
+                    Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
+                    Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
+                    orders.add(order);
+                    intent.putExtra(COUNT_TAG, selectedUser.size());
+                    intent.putExtra(AMOUNT_TAG, sum);
+                    startActivity(intent);
+                }
+
 
 //                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
 //                toast.show();
