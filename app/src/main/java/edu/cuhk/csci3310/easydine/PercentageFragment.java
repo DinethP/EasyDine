@@ -1,8 +1,13 @@
 package edu.cuhk.csci3310.easydine;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.LinkedList;
 
@@ -25,10 +32,18 @@ public class PercentageFragment extends Fragment {
     private LinkedList<Double> percentageList = new LinkedList<>();
 
     private double total;
+    private double percentage;
+    private int persons;
+    private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
+    private String SPILT_COUNT_TAG = "SPILT_COUNT";
+
+    TextView textView;
+    Button calButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver, new IntentFilter("update_percentage"));
     }
 
     @Override
@@ -37,15 +52,28 @@ public class PercentageFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_percentage, container, false);
 
+        if (getArguments() != null){
+            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
+            total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
+        }
+        else{
+            total = 0;
+            persons = 1;
+        }
+
+        textView = view.findViewById(R.id.total_percentage);
+        calButton = view.findViewById(R.id.cal_button);
+
         //set up recyclerView
         recyclerView = view.findViewById(R.id.percentage_recyclerview);
         recyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        percentageListAdapter = new PercentageListAdapter(view.getContext(), total);
+        percentageListAdapter = new PercentageListAdapter(view.getContext(), total, persons);
         recyclerView.setAdapter(percentageListAdapter);
 
         // get the amount users need to pay
         EditText amount = view.findViewById(R.id.amount);
         amount.setHint("Amount");
+        amount.setText(String.valueOf(total));
 
         amount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -60,17 +88,17 @@ public class PercentageFragment extends Fragment {
 
                 // if the field is empty, pass 0 to the recyclerview adapter
                 if(s.isEmpty()){
-                    percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0);
+                    percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
                 }
                 // if the field is not empty, pass the value to the adapter
                 try{
                     total = Double.parseDouble(s);
-                    percentageListAdapter = new PercentageListAdapter(view.getContext(), total);
+                    percentageListAdapter = new PercentageListAdapter(view.getContext(), total, persons);
                     recyclerView.setAdapter(percentageListAdapter);
                 // if error is encountered, pass 0 to the adapter
                 }catch (Exception e){
-                    percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0);
+                    percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
                 }
 
@@ -82,7 +110,31 @@ public class PercentageFragment extends Fragment {
             }
         });
 
+        calButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (percentage != 100){
+                    Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            }
+        });
+
         return view;
 
     }
+
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            double value = intent.getDoubleExtra("PERCENTAGE", 0);
+            double previous = intent.getDoubleExtra("PREVIOUS", 0);
+            percentage -= previous;
+            percentage += value;
+            String v = "Total Percentage: " + percentage;
+            textView.setText(v);
+
+        }
+    };
 }

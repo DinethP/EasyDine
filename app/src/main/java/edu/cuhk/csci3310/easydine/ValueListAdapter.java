@@ -18,6 +18,8 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
     private LayoutInflater inflater;
 
     private double total;
+    private double previous;
+    private int persons;
 
     class ValueViewHolder extends RecyclerView.ViewHolder {
         EditText value;
@@ -31,8 +33,9 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     }
 
-    public ValueListAdapter(Context context) {
+    public ValueListAdapter(Context context, int persons) {
         inflater = LayoutInflater.from(context);
+        this.persons = persons;
     }
 
     @NonNull
@@ -50,27 +53,34 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                String s = charSequence.toString();
+                try{
+                    previous = Double.parseDouble(s);
+                }catch (Exception e){
+                    previous = 0;
+                }
             }
             // pass the amount to the fragment when the field is updated
             // return 0 if error is encountered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                String s = charSequence.toString();
-                Intent intent = new Intent("update_value");
 
-                try {
-                    intent.putExtra("value", Double.parseDouble(s));
-                } catch (Exception e) {
-                    intent.putExtra("value", 0.0);
-                }
-
-                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
+                String s = editable.toString();
+                Intent intent = new Intent("update_value");
 
+                try {
+                    intent.putExtra("value", Double.parseDouble(s));
+                    intent.putExtra("PREVIOUS", previous);
+                } catch (Exception e) {
+                    intent.putExtra("value", 0.0);
+                    intent.putExtra("PREVIOUS", previous);
+                }
+
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
         });
 
@@ -78,7 +88,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     @Override
     public int getItemCount() {
-        return 6;
+        return persons+1;
     }
 
 

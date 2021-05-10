@@ -61,10 +61,10 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
 
         @Override
         public void onClick(View view) {
+            // TODO: Maybe add a fragment to include additional order details
             Log.d("PastOrdersListAdapter", "We here");
         }
     }
-
 
     public PastOrdersListAdapter(Context context, LinkedList<String> orderIdList, LinkedList<String> restaurantImageList, LinkedList<String> restaurantNameList,
                                  LinkedList<String> dateList, LinkedList<Integer> friendsList, LinkedList<Boolean> payedList) {
@@ -110,6 +110,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         else {
             holder.isPayedButton.setEnabled(true);
         }
+
         holder.isPayedButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Log.d("World", "Order is payed");

@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private RecyclerView mRecyclerView;
     private CardListAdapter mAdapter;
 
-    private LinkedList<String> mCardName = new LinkedList<>(Arrays.asList("New Order", "Past Orders", "Split Bill", "Analytics", "About Us!", "Coming Soon"));
+    private LinkedList<String> mCardName = new LinkedList<>(Arrays.asList("New Order", "Past Orders", "Split Bill", "Analytics", "About Us", "Coming Soon!"));
 
     DrawerLayout drawerLayout;
     NavigationView navigationView;
