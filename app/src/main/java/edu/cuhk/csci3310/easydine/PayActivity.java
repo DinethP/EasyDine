@@ -15,6 +15,9 @@ public class PayActivity extends AppCompatActivity {
     private String COUNT_TAG = "COUNT";
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
+
+    private double amount;
+    private int persons;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,9 +34,15 @@ public class PayActivity extends AppCompatActivity {
         }
 
         final RadioGroup radioGroup = findViewById(R.id.radio_group);
-        Bundle extras = getIntent().getExtras();
-        double amount = extras.getDouble(AMOUNT_TAG, 1.0);
-        int persons = extras.getInt(COUNT_TAG, 1);
+        try{
+            Bundle extras = getIntent().getExtras();
+            amount = extras.getDouble(AMOUNT_TAG, 1.0);
+            persons = extras.getInt(COUNT_TAG, 1);
+        }catch(Exception e){
+            amount = 0;
+            persons = 0;
+        }
+
 
         Log.d("spilt", String.valueOf(amount));
         Log.d("spilt", String.valueOf(persons));
