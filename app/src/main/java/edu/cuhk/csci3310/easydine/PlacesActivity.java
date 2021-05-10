@@ -92,7 +92,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
     LocationRequest locationRequest;
     LocationManager locationManager;
     String countryCode;
-    AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();;
+    AddParticipantsFragment addParticipantsFragment = new AddParticipantsFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
