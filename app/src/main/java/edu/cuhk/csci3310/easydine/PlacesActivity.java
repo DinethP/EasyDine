@@ -88,6 +88,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
     private final int singleOrder = 0;
     private final int groupOrder = 1;
     private boolean openUsersFragment = false;
+    private boolean isSingle = true;
     LocationCallback locationCallback;
     LocationRequest locationRequest;
     LocationManager locationManager;
@@ -197,8 +198,10 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
-                intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
+                if(!isSingle)
+                    intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
                 intent.putExtra("PLACE", place);
+                intent.putExtra("FLAG", isSingle);
                 startActivity(intent);
             }
         });
@@ -216,11 +219,13 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                 switch (index){
                     case singleOrder:
                         usersFrameLayout.setVisibility(View.GONE);
+                        isSingle = true;
                         break;
                     case groupOrder:
                         addParticipantsFragment = new AddParticipantsFragment();
                         getSupportFragmentManager().beginTransaction().add(R.id.users_frame_layout, addParticipantsFragment, null).commit();
                         usersFrameLayout.setVisibility(View.VISIBLE);
+                        isSingle = false;
                         break;
                 }
             }
