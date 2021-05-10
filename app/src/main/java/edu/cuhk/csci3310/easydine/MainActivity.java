@@ -34,25 +34,32 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = "MainActivity";
     private String KEY = "isLoggedIn";
     private String preferencesName = "UserDetails";
-    public String accountDisplayName;
+    public String userDisplayName;
+    public String userEmail;
 
     private RecyclerView mRecyclerView;
     private CardListAdapter mAdapter;
@@ -101,49 +108,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 notificationManager.notify(NOTIFICATION_ID, notification);
             }
         });
-
-        db.collection("orders")
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot snapshots,
-                                        @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w("TAG", "listen:error", e);
-                            return;
-                        }
-
-                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
-                            switch (dc.getType()) {
-                                case ADDED:
-                                    Log.d(TAG, "New document added");
-                                    break;
-                                case MODIFIED:
-                                    Log.d(TAG, "Modified document: " + dc.getDocument());
-                                    // create notification
-                                    // this is a hack solution because firestore doesm'y allow to listen for field changes, only whole document changes
-                                    // since the only time a document will be modified is to mark as true, this is  correct
-                                    Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                                            .setContentTitle("Marked as paid")
-                                            .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
-                                            .setSmallIcon(R.drawable.ic_notification)
-                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                            .setContentIntent(pendingIntent)
-                                            .build();
-
-                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
-                                    notificationManager.notify(NOTIFICATION_ID, notification);
-                                    break;
-                                case REMOVED:
-                                    Log.d(TAG, "Removed document");
-                                    break;
-                            }
-                        }
-
-                    }
-                });
+// Create a reference to the orders collection
+//        CollectionReference orders = db.collection("orders");
+//
+//        // Filter query by userID
+//        Query query = orders.whereEqualTo("userID", userEmail);
+//
+//        // Get order history
+//        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
 
         FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
-        accountDisplayName = account.getEmail();
+        userEmail = account.getEmail();
+        userDisplayName = account.getDisplayName();
+        User currentUser = new User(userDisplayName);
         ImageView profilePic = findViewById(R.id.profilePic);
         TextView title = findViewById(R.id.greeting);
         title.setText("Hello " + account.getDisplayName());
@@ -171,9 +148,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         // set up recyclerview
         mRecyclerView = findViewById(R.id.recyclerview);
-        mAdapter = new CardListAdapter(this, mCardName, accountDisplayName);
+        mAdapter = new CardListAdapter(this, mCardName, userEmail);
         mRecyclerView.setAdapter(mAdapter);
 
+         db.collection("orders")
+                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot snapshots,
+                        @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w("TAG", "listen:error", e);
+                        return;
+                    }
+
+                    for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                        switch (dc.getType()) {
+                            case ADDED:
+                                Log.d(TAG, "New document added");
+                                break;
+                            case MODIFIED:
+                                // create notification
+                                // since the only time a order collection document will be modified is to mark the order as true, show a notification
+                                ArrayList<Map> friends = (ArrayList<Map>) dc.getDocument().get("friends");
+
+                                String userID = dc.getDocument().getString("userID");
+
+
+                                if(userID.equals(userEmail) || checkCurrUserInFriendsList(friends)){
+                                        Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                                .setContentTitle("Marked as paid")
+                                                .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                .setContentIntent(pendingIntent)
+                                                .build();
+
+                                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                                    notificationManager.notify(NOTIFICATION_ID, notification);
+                                    break;
+                                }
+                            case REMOVED:
+                                Log.d(TAG, "Removed document");
+                                break;
+                        }
+                    }
+
+                }
+            });
 
         Log.d(TAG, "photo url: " + account.getPhotoUrl());
     }
@@ -215,5 +236,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);
         }
+    }
+
+    private boolean checkCurrUserInFriendsList(ArrayList<Map> friends){
+        Log.d(TAG, "Entered Check function");
+        Log.d(TAG, "size of friends list: " + friends.size());
+
+        for(Map entry : friends){
+            Log.d(TAG, "Friend name: " + entry.get("userName"));
+            if(entry.get("userName").equals(userDisplayName)){
+                return true;
+            }
+        }
+        return false;
     }
 }

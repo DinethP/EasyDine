@@ -102,7 +102,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         holder.nameTextView.setText(mRestaurantName);
         holder.dateTextView.setText(mDate);
 //        holder.friendsTextView.setText(R.string.friends_label + Integer.toString(mFriends));
-        holder.friendsTextView.setText(String.format("# of Friends:: %s", Integer.toString(mFriends)));
+        holder.friendsTextView.setText(String.format("# of Friends: %s", Integer.toString(mFriends)));
         if (mIsPayed) {
             holder.isPayedButton.setText("Already Paid");
             holder.isPayedButton.setEnabled(false);
