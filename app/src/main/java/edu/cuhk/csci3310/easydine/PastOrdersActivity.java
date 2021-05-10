@@ -18,6 +18,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -35,6 +39,8 @@ public class PastOrdersActivity extends AppCompatActivity {
     private final LinkedList<String> mDateList = new LinkedList<>();
     private final LinkedList<Integer> mFriendsList = new LinkedList<>();
     private final LinkedList<Boolean> mPayedList = new LinkedList<>();
+    DateFormat dfParse = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss"); //Format for parsing the Input string
+    DateFormat dfOutput = new SimpleDateFormat("E d MMM, yyyy, hh.mm aa"); //Format for formatting the output
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,7 +64,8 @@ public class PastOrdersActivity extends AppCompatActivity {
                         mOrderIdList.add(document.getId());
                         mRestaurantImageList.add(document.get("imageURL").toString());
                         mRestaurantNameList.add(document.get("restaurant").toString());
-                        mDateList.add(document.get("orderTime").toString());
+                        // convert date to a more human-readable format
+                        mDateList.add(formatDate(document.get("orderTime").toString()));
                         List<String> friends = (List<String>) document.get("friends");
                         mFriendsList.add(friends.size());
                         mPayedList.add((Boolean) document.get("isPayed"));
@@ -84,5 +91,20 @@ public class PastOrdersActivity extends AppCompatActivity {
 
         // Give the RecyclerView a default layout manager.
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    public String formatDate(String date) {
+        Date inputDate;
+        // in case the conversion fails, it will still return the string of existing date format
+        String formattedDateString = date;
+        try {
+            inputDate = dfParse.parse(date);
+            formattedDateString = dfOutput.format(inputDate);
+            Log.d(TAG, formattedDateString);
+        } catch (ParseException e) {
+            Log.d(TAG,  "Exception: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return formattedDateString;
     }
 }

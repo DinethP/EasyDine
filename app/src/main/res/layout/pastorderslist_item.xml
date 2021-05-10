@@ -14,8 +14,9 @@
 
         <ImageView
             android:id="@+id/pastOrdersImageView"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:foregroundGravity=""
             android:layout_centerHorizontal="true"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -23,83 +24,53 @@
             app:layout_constraintTop_toTopOf="@id/pastOrdersConstraintLayout" />
 
         <TextView
-            android:id="@+id/pastOrdersRestaurantLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/restaurant_label"
-            android:textSize="20sp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersImageView"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/pastOrdersRestaurantName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
             android:text="@string/card_name"
-            android:textSize="20sp"
+            android:textSize="22sp"
+            android:textStyle="bold"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersRestaurantLabel"
+            app:layout_constraintStart_toEndOf="@+id/pastOrdersImageView"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
-            android:id="@+id/pastOrdersDateLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/date_label"
-            android:textSize="20sp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersImageView"
-            app:layout_constraintTop_toBottomOf="@id/pastOrdersRestaurantLabel" />
 
         <TextView
             android:id="@+id/pastOrdersDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
             android:text="@string/card_name"
-            android:textSize="20sp"
+            android:textSize="18sp"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersDateLabel"
+            app:layout_constraintStart_toEndOf="@+id/pastOrdersImageView"
             app:layout_constraintTop_toBottomOf="@id/pastOrdersRestaurantName" />
-
-        <TextView
-            android:id="@+id/pastOrdersFriendsLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="@string/friends_label"
-            android:textSize="20sp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersImageView"
-            app:layout_constraintTop_toBottomOf="@id/pastOrdersDateLabel" />
 
         <TextView
             android:id="@+id/pastOrdersFriends"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="3dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="176dp"
             android:text="@string/card_name"
-            android:textSize="20sp"
+            android:textSize="18sp"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@id/pastOrdersFriendsLabel"
+            app:layout_constraintStart_toEndOf="@+id/pastOrdersImageView"
             app:layout_constraintTop_toBottomOf="@id/pastOrdersDate" />
 
         <Button
             android:id="@+id/isPayedBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:text="@string/mark_as_payed"
-            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="@id/pastOrdersImageView"
-            app:layout_constraintTop_toBottomOf="@id/pastOrdersDate"
-            />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pastOrdersDate" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

@@ -1,8 +1,6 @@
 package edu.cuhk.csci3310.easydine;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -29,7 +27,7 @@ import io.perfmark.Link;
 public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAdapter.PastOrdersViewHolder> {
     private Context context;
     private LayoutInflater mInflater;
-
+    private String TAG = "PastOrdersAdapter";
     private final LinkedList<String> mOrderIdList;
     private final LinkedList<String> mRestaurantImageList;
     private final LinkedList<String> mRestaurantNameList;
@@ -78,6 +76,8 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         this.mDateList = dateList;
         this.mFriendsList = friendsList;
         this.mPayedList = payedList;
+        this.context = context;
+
     }
 
     @NonNull
@@ -101,8 +101,8 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         new DownloadImageTask(holder.restaurantImageView).execute(mImageURL);
         holder.nameTextView.setText(mRestaurantName);
         holder.dateTextView.setText(mDate);
-        holder.friendsTextView.setText(Integer.toString(mFriends));
-
+//        holder.friendsTextView.setText(R.string.friends_label + Integer.toString(mFriends));
+        holder.friendsTextView.setText(String.format("# of Friends: %s", Integer.toString(mFriends)));
         if (mIsPayed) {
             holder.isPayedButton.setText("Already Paid");
             holder.isPayedButton.setEnabled(false);
@@ -113,6 +113,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
 
         holder.isPayedButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                Log.d("World", "Order is payed");
                 db.collection("orders").document(orderId).update("isPayed", true);
                 mPayedList.set(position, true);
                 notifyDataSetChanged();
