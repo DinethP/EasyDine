@@ -21,6 +21,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class ValueFragment extends Fragment {
 
     private RecyclerView recyclerView;
@@ -109,6 +112,12 @@ public class ValueFragment extends Fragment {
                 if (total != 0){
                     Toast toast =  Toast.makeText(getContext(), "Remaining value not equal to 0!", Toast.LENGTH_SHORT);
                     toast.show();
+                }else{
+                    Intent intent = new Intent(getActivity(), PastOrdersActivity.class);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String email = user.getEmail();
+                    intent.putExtra("accountName", email);
+                    startActivity(intent);
                 }
             }
         });

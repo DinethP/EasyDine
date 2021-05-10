@@ -43,8 +43,6 @@ public class PayActivity extends AppCompatActivity {
         bundle.putInt(SPILT_COUNT_TAG, persons);
 
         EqualFragment equalFragment = new EqualFragment();
-        PercentageFragment percentageFragment = new PercentageFragment();
-        ValueFragment valueFragment = new ValueFragment();
 
         equalFragment.setArguments(bundle);
         getSupportFragmentManager().beginTransaction()
@@ -59,6 +57,7 @@ public class PayActivity extends AppCompatActivity {
                 switch (index){
                     // equal pay
                     case 0:
+                        EqualFragment equalFragment = new EqualFragment();
                         equalFragment.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container_view, equalFragment)
@@ -66,6 +65,7 @@ public class PayActivity extends AppCompatActivity {
                         break;
                     // by percentage
                     case 1:
+                        PercentageFragment percentageFragment = new PercentageFragment();
                         percentageFragment.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container_view, percentageFragment, null)
@@ -73,6 +73,7 @@ public class PayActivity extends AppCompatActivity {
                         break;
                     // by exact value
                     case 2:
+                        ValueFragment valueFragment = new ValueFragment();
                         valueFragment.setArguments(bundle);
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.fragment_container_view, valueFragment, null)

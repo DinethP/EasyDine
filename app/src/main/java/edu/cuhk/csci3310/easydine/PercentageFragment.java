@@ -21,6 +21,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.LinkedList;
 
 public class PercentageFragment extends Fragment {
@@ -49,9 +52,10 @@ public class PercentageFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        percentage = 0;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_percentage, container, false);
-
+        // get the number of people and the total amount from the PayActivity
         if (getArguments() != null){
             persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
             total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
@@ -60,7 +64,7 @@ public class PercentageFragment extends Fragment {
             total = 0;
             persons = 1;
         }
-
+        //set up textview and cal button
         textView = view.findViewById(R.id.total_percentage);
         calButton = view.findViewById(R.id.cal_button);
 
@@ -109,21 +113,30 @@ public class PercentageFragment extends Fragment {
 
             }
         });
-
+        // check if the percentage equals to 100
+        // remind user if it is not
+        // go to pastOrderActivity if yes
         calButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (percentage != 100){
                     Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
                     toast.show();
+                }else{
+                    Intent intent = new Intent(getActivity(), PastOrdersActivity.class);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String email = user.getEmail();
+                    intent.putExtra("accountName", email);
+                    startActivity(intent);
                 }
+
             }
         });
 
         return view;
 
     }
-
+    // receive updates from the list adapter
     public BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
 
         @Override

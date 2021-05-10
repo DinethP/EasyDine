@@ -63,6 +63,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
         holder.percentage.addTextChangedListener(new TextWatcher() {
             final Context context = holder.percentage.getContext();
             @Override
+            // store the previous value
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
                 try{
@@ -78,7 +79,8 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
-
+            // update the amount field
+            // and pass the previous and current values to fragment for calculating the total value
             @Override
             public void afterTextChanged(Editable editable) {
                 Intent intent = new Intent("update_percentage");
