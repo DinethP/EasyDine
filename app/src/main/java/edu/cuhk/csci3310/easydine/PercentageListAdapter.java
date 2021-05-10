@@ -108,6 +108,6 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public int getItemCount() {
-        return persons+1;
+        return persons == 0 ? 6 : persons+1;
     }
 }

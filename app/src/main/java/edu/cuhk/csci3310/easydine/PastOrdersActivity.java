@@ -67,7 +67,7 @@ public class PastOrdersActivity extends AppCompatActivity {
                         // convert date to a more human-readable format
                         mDateList.add(formatDate(document.get("orderTime").toString()));
                         List<String> friends = (List<String>) document.get("friends");
-                        // handle single and group order 
+                        // handle single and group order
                         if (friends == null)
                             mFriendsList.add(0);
                         else
