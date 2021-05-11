@@ -131,8 +131,8 @@ public class EqualFragment extends Fragment {
         editText3.setHint("Amount");
         if (persons != null){
             editText1.setText(String.valueOf(persons.size()+1));
-            textView.setText(String.valueOf( amount / (persons.size()+1) ));
-            userToPay = String.valueOf( amount / (persons.size()+1) );
+            textView.setText(String.format("%.2f", amount / (persons.size()+1)));
+            userToPay = String.format("%.2f", amount / (persons.size()+1));
         } else{
             editText1.setText(String.valueOf(1));
             textView.setText(String.valueOf(0));
@@ -179,12 +179,12 @@ public class EqualFragment extends Fragment {
 
                 try {
                     currentPersons = Integer.parseInt(s);
-                    textView.setText(String.format("%.1f", amount / (currentPersons)));
+                    textView.setText(String.format("%.2f", amount / (currentPersons)));
                 }catch (Exception e){
                     currentPersons = 0;
                     textView.setText(String.valueOf(0));
                 }
-                userToPay = String.valueOf( amount / (currentPersons) );
+                userToPay = String.format("%.2f", amount / (currentPersons));
             }
         });
 
@@ -213,14 +213,14 @@ public class EqualFragment extends Fragment {
                         currentPersons = modified ? currentPersons : currentPersons+1;
                     else
                         currentPersons = 1;
-                    textView.setText(String.valueOf( amount / currentPersons ));
+                    textView.setText(String.format("%.2f", amount / (persons.size()+1)));
 
                 }catch(Exception e){
                     amount = 0;
                     textView.setText(String.valueOf(0));
                 }
 
-                userToPay = String.valueOf( amount / currentPersons );
+                userToPay = String.format("%.2f", amount / (currentPersons));
             }
         });
 
@@ -261,7 +261,7 @@ public class EqualFragment extends Fragment {
                 // show notification on how much to pay
                 Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                         .setContentTitle("Get ready to pay")
-                        .setContentText(String.format("You need to pay $%s for the recent order", userToPay))
+                        .setContentText(String.format("You need to pay $%s for the recent order at %s", userToPay, restaurant))
                         .setSmallIcon(R.drawable.ic_notification)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentIntent(pendingIntent)

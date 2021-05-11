@@ -12,6 +12,7 @@ import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
@@ -30,15 +31,22 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class PercentageFragment extends Fragment {
 
@@ -206,17 +214,31 @@ public class PercentageFragment extends Fragment {
                     String userName = user.getDisplayName();
                     // send orderSummary to firebase
                     mDatabase = FirebaseFirestore.getInstance();
-                    CollectionReference orderSummary = mDatabase.collection("orderSummary");
+                    CollectionReference orderSummaryRef = mDatabase.collection("orderSummary");
                     if (persons != null){
                         OrderSummary summary = new OrderSummary(orderID, userID, userName, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
                         //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
-                        orderSummary.add(summary);
+                        orderSummaryRef.add(summary);
+                        // to update the isConfirmed field so that the listener in main activity will get fired
+                        orderSummaryRef.whereEqualTo("orderID", orderID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful()){
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        Map<String, Object> map = new HashMap<>();
+                                        map.put("isConfirmed", true);
+//                                    complaintsRef.document(document.getId()).set(map, SetOptions.merge());
+                                        orderSummaryRef.document(document.getId()).set(map, SetOptions.merge());
+                                    }
+                                }
+                            }
+                        });
                     }
 
                     // show notification on how much to pay
                     Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                             .setContentTitle("Get ready to pay")
-                            .setContentText(String.format("You need to pay $%s for the recent order", percentageListAdapter.getUserToPayValue()))
+                            .setContentText(String.format("You need to pay $%s for the recent order at %s", String.format("%.2f", percentageListAdapter.getUserToPayValue()), restaurant))
                             .setSmallIcon(R.drawable.ic_notification)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setContentIntent(pendingIntent)

@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     String restaurant = (String) dc.getDocument().get("restaurant");
                                     String hostName = (String) dc.getDocument().get("hostName");
                                     String userID = dc.getDocument().getString("userID");
-
-                                    if(userID.equals(userEmail) || checkCurrUserInFriendsList(friends)){
+                                    // check if current user is a participant of the order
+                                    if(checkCurrUserInFriendsList(friends)){
                                         int userIndexInList = getCurrUserInFriendsListPos(friends);
                                         Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
                                                 .setContentTitle(String.format("Order submitted by %s at %s", hostName, restaurant))
-                                                .setContentText(String.format("You need to pay $%s for the recent order", moneyOwed.get(userIndexInList)))
+                                                .setContentText(String.format("You need to pay $%.2f for the recent order", moneyOwed.get(userIndexInList)))
                                                 .setSmallIcon(R.drawable.ic_notification)
                                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                                                 .setContentIntent(pendingIntent)
@@ -289,7 +289,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private int getCurrUserInFriendsListPos(ArrayList<Map> friends){
         Log.d(TAG, "Entered Check function");
         Log.d(TAG, "size of friends list: " + friends.size());
-        int pos = 0;
+        int pos = -1;
         for(int i = 0; i < friends.size(); i++){
             Map entry = friends.get(i);
             Log.d(TAG, "Friend name: " + entry.get("userName"));
