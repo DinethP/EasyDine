@@ -32,6 +32,11 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class ValueFragment extends Fragment {
     private String TAG = "ValueFragment";
@@ -41,7 +46,7 @@ public class ValueFragment extends Fragment {
     private TextView remaining;
 
     private double total;
-    private int persons;
+    private ArrayList<User> persons;
 
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
@@ -51,12 +56,28 @@ public class ValueFragment extends Fragment {
     private int NOTIFICATION_ID = 0;
     private PendingIntent pendingIntent;
 
+    private OrderSummary orderSummary;
+    private boolean openedFromNewOrderDetailsActivity = false;
+
+    private ArrayList<Double> moneyOwed = new ArrayList<>();
+
+    private String userID, restaurant, orderTime, orderID;
+    private double amountPaid, hostOwes;
+    private ArrayList<User> friends;
+    private LinkedList<String> dishes;
+    private LinkedList<Double> prices;
+    private String imageURL;
+    private boolean isPayed;
+
+    private FirebaseFirestore mDatabase;
+
     Button calButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver, new IntentFilter("update_value"));
+        LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver2, new IntentFilter("PASS_AMOUNT"));
         // create notification channel
         createNotificationChannel();
         // create pending intent so that clicking the notification will open the activity
@@ -71,14 +92,35 @@ public class ValueFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_value, container, false);
+        calButton = view.findViewById(R.id.cal_button);
+        calButton.setVisibility(View.GONE);
 
         if (getArguments() != null){
-            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
+//            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
             total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
+
+            if(getArguments().getSerializable("ORDER") != null){
+                orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
+                persons = orderSummary.friends;
+                openedFromNewOrderDetailsActivity = true;
+                calButton.setVisibility(View.VISIBLE);
+            }
         }
         else{
             total = 0;
-            persons = 1;
+            persons = new ArrayList<User>();
+        }
+
+        // init moneyOwed list
+        if (persons != null){
+            for (int i = 0;i <persons.size()+1; i++){
+                moneyOwed.add(i, 0.0);
+            }
+        }else{
+            for (int i = 0;i < 7; i++){
+                moneyOwed.add(i, 0.0);
+            }
+            calButton.setVisibility(View.VISIBLE);
         }
 
         EditText amount = view.findViewById(R.id.amount);
@@ -126,6 +168,19 @@ public class ValueFragment extends Fragment {
             }
         });
 
+        if (orderSummary != null){
+            orderID = orderSummary.orderID;
+            userID = orderSummary.userID;
+            restaurant = orderSummary.restaurant;
+            amountPaid = orderSummary.amount;
+            orderTime = orderSummary.orderTime;
+            friends = orderSummary.friends;
+            dishes = orderSummary.dishes;
+            prices = orderSummary.prices;
+            imageURL = orderSummary.imageURL;
+            isPayed = orderSummary.isPayed;
+        }
+
         calButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,6 +189,13 @@ public class ValueFragment extends Fragment {
                     toast.show();
                 }else{
                     // show notification on how much to pay
+                    mDatabase = FirebaseFirestore.getInstance();
+                    CollectionReference orderSummary = mDatabase.collection("orderSummary");
+                    if (persons != null){
+                        OrderSummary summary = new OrderSummary(orderID, userID, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
+                        //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
+                        orderSummary.add(summary);
+                    }
                     Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                             .setContentTitle("Get ready to pay")
                             .setContentText(String.format("You need to pay $%s for the recent order", valueListAdapter.getUserToPayValue()))
@@ -166,6 +228,15 @@ public class ValueFragment extends Fragment {
             String v = "Remaining amount: " + total;
             remaining.setText(v);
 
+        }
+    };
+    // get individual amount from list
+    public BroadcastReceiver broadcastReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            double amount = intent.getDoubleExtra("AMOUNT", 0);
+            int position = intent.getIntExtra("POSITION", 0);
+            moneyOwed.set(position, amount);
         }
     };
 

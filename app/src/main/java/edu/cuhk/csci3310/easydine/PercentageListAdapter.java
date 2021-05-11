@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -33,7 +36,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     class PercentageViewHolder extends RecyclerView.ViewHolder{
 
         EditText percentage;
-        TextView amount;
+        TextView amount, name;
 
         PercentageListAdapter percentageListAdapter;
 
@@ -42,6 +45,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
             this.percentageListAdapter = percentageListAdapter;
             percentage = itemView.findViewById(R.id.percentage);
             amount = itemView.findViewById(R.id.amount);
+            name = itemView.findViewById(R.id.name);
 
         }
     }
@@ -62,6 +66,17 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public void onBindViewHolder(@NonNull PercentageViewHolder holder, int position) {
+
+        if(persons != null){
+            if (position == 0){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String userName = user.getDisplayName();
+                holder.name.setText(userName);
+            }else
+                holder.name.setText(persons.get(position-1).getUserName());
+        }
+
+
         holder.percentage.addTextChangedListener(new TextWatcher() {
             final Context context = holder.percentage.getContext();
             @Override
@@ -86,6 +101,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
             @Override
             public void afterTextChanged(Editable editable) {
                 Intent intent = new Intent("update_percentage");
+                Intent intent1 = new Intent("PASS_AMOUNT");
                 try {
                     String s = editable.toString();
                     Double value = Double.parseDouble(s) / 100 * total;
@@ -102,7 +118,12 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
                     intent.putExtra("PREVIOUS", previous);
                     userToPay = 0.0;
                 }
+                double value = Double.parseDouble(holder.amount.getText().toString());
+                intent1.putExtra("AMOUNT", value);
+                intent1.putExtra("POSITION", position);
+
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
             }
         });
 
@@ -115,7 +136,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public int getItemCount() {
-        return persons.size() == 0 ? 6 : persons.size() + 1;
+        return persons == null ? 6 : persons.size() + 1;
     }
 
     public double getUserToPayValue (){

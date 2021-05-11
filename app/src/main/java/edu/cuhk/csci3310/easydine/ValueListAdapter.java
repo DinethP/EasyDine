@@ -8,6 +8,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.TextView;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -19,22 +25,24 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     private double total;
     private double previous;
-    private int persons;
+    private ArrayList<User> persons;
     private double userToPay;
 
     class ValueViewHolder extends RecyclerView.ViewHolder {
         EditText value;
+        TextView name;
         ValueListAdapter valueListAdapter;
 
         public ValueViewHolder(@NonNull View itemView, ValueListAdapter valueListAdapter) {
             super(itemView);
             this.valueListAdapter = valueListAdapter;
             value = itemView.findViewById(R.id.value);
+            name = itemView.findViewById(R.id.name);
         }
 
     }
 
-    public ValueListAdapter(Context context, int persons) {
+    public ValueListAdapter(Context context, ArrayList<User> persons) {
         inflater = LayoutInflater.from(context);
         this.persons = persons;
     }
@@ -48,6 +56,15 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     @Override
     public void onBindViewHolder(@NonNull ValueViewHolder holder, int position) {
+
+        if(persons != null){
+            if (position == 0){
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                String userName = user.getDisplayName();
+                holder.name.setText(userName);
+            }else
+                holder.name.setText(persons.get(position-1).getUserName());
+        }
 
         holder.value.addTextChangedListener(new TextWatcher() {
             final Context context = holder.value.getContext();
@@ -72,7 +89,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
                 Intent intent = new Intent("update_value");
-
+                Intent intent1 = new Intent("PASS_AMOUNT");
                 try {
                     intent.putExtra("value", Double.parseDouble(s));
                     // current user is the first person on the list. So get that value for notification
@@ -85,8 +102,12 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                     intent.putExtra("PREVIOUS", previous);
                     userToPay = 0.0;
                 }
+                double value = Double.parseDouble(holder.value.getText().toString());
+                intent1.putExtra("AMOUNT", value);
+                intent1.putExtra("POSITION", position);
 
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent1);
             }
         });
 
@@ -94,7 +115,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     @Override
     public int getItemCount() {
-        return persons == 0 ? 6 : persons+1;
+        return persons == null ? 6 : persons.size() + 1;
     }
 
     public double getUserToPayValue (){
