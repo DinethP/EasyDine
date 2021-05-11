@@ -31,8 +31,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class EqualFragment extends Fragment {
 
     private int persons;
-    private String description;
     private double amount;
+    private boolean modified = false;
 
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
@@ -98,9 +98,20 @@ public class EqualFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
-                persons = Integer.parseInt(s);
-                textView.setText(String.valueOf( amount / (persons+1) ));
-                userToPay = String.valueOf( amount / (persons+1) );
+                modified = true;
+                if (s.isEmpty()){
+                    persons = 0;
+                    textView.setText(String.valueOf(0));
+                }
+
+                try {
+                    persons = Integer.parseInt(s);
+                    textView.setText(String.valueOf( amount / (persons) ));
+                }catch (Exception e){
+                    persons = 0;
+                    textView.setText(String.valueOf(0));
+                }
+                userToPay = String.valueOf( amount / (persons) );
             }
         });
 
@@ -118,9 +129,22 @@ public class EqualFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
-                amount = Double.parseDouble(s);
-                textView.setText(String.valueOf( amount / (persons+1) ));
-                userToPay = String.valueOf( amount / (persons+1) );
+                int currentPersons = 0;
+                if (s.isEmpty()){
+                    amount = 0;
+                    textView.setText(String.valueOf(0));
+                }
+                try {
+                    amount = Double.parseDouble(s);
+                    currentPersons = modified ? persons : persons+1;
+                    textView.setText(String.valueOf( amount / currentPersons ));
+
+                }catch(Exception e){
+                    amount = 0;
+                    textView.setText(String.valueOf(0));
+                }
+                
+                userToPay = String.valueOf( amount / currentPersons );
             }
         });
 
