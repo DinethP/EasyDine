@@ -31,7 +31,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class PercentageFragment extends Fragment {
@@ -44,7 +46,7 @@ public class PercentageFragment extends Fragment {
 
     private double total;
     private double percentage;
-    private int persons;
+    private ArrayList<User> persons;
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
 
@@ -52,6 +54,11 @@ public class PercentageFragment extends Fragment {
     private String CHANNEL_NAME = "channelName";
     private int NOTIFICATION_ID = 0;
     private PendingIntent pendingIntent;
+
+    private OrderSummary orderSummary;
+    private ArrayList<Double> moneyOwed = new ArrayList<>();
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private boolean openedFromNewOrderDetailsActivity = false;
 
     TextView textView;
     Button calButton;
@@ -77,18 +84,27 @@ public class PercentageFragment extends Fragment {
         percentage = 0;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_percentage, container, false);
-        // get the number of people and the total amount from the PayActivity
-        if (getArguments() != null){
-            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
-            total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
-        }
-        else{
-            total = 0;
-            persons = 1;
-        }
         //set up textview and cal button
         textView = view.findViewById(R.id.total_percentage);
         calButton = view.findViewById(R.id.cal_button);
+        calButton.setVisibility(View.GONE);
+
+        // get the number of people and the total amount from the PayActivity
+        if (getArguments() != null){
+//            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
+            total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
+            // check if we should store order summary to firestore
+            if(getArguments().getSerializable("ORDER") != null){
+                orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
+                persons = orderSummary.friends;
+                openedFromNewOrderDetailsActivity = true;
+                calButton.setVisibility(View.VISIBLE);
+            }
+        }
+        else{
+            total = 0;
+            persons = new ArrayList<User>();
+        }
 
         //set up recyclerView
         recyclerView = view.findViewById(R.id.percentage_recyclerview);

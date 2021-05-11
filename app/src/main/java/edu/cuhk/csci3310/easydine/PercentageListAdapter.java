@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import androidx.annotation.NonNull;
@@ -26,7 +27,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     private double total;
     private double previous;
-    private int persons;
+    private ArrayList<User> persons;
     private double userToPay;
 
     class PercentageViewHolder extends RecyclerView.ViewHolder{
@@ -46,7 +47,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     }
 
 
-    public PercentageListAdapter(Context context, double total, int persons){
+    public PercentageListAdapter(Context context, double total, ArrayList<User> persons){
         mInflater = LayoutInflater.from(context);
         this.total = total;
         this.persons = persons;
@@ -114,7 +115,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public int getItemCount() {
-        return persons == 0 ? 6 : persons+1;
+        return persons.size() == 0 ? 6 : persons.size() + 1;
     }
 
     public double getUserToPayValue (){

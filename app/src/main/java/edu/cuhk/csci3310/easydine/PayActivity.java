@@ -8,16 +8,26 @@ import android.view.View;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
-public class PayActivity extends AppCompatActivity {
+import com.google.android.libraries.places.api.model.Place;
 
+import java.util.ArrayList;
+
+public class PayActivity extends AppCompatActivity {
+    private String TAG = "PayActivity";
     private RadioButton equalButton;
     private String AMOUNT_TAG = "AMOUNT";
     private String COUNT_TAG = "COUNT";
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
+    private String PARTICIPANTS = "PARTICIPANTS";
 
     private double amount;
     private int persons;
+    private String orderId;
+    private ArrayList<User> selectedUsers = new ArrayList<>();
+    private Place place;
+    private OrderSummary orderSummary;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +48,12 @@ public class PayActivity extends AppCompatActivity {
             Bundle extras = getIntent().getExtras();
             amount = extras.getDouble(AMOUNT_TAG, 1.0);
             persons = extras.getInt(COUNT_TAG, 1);
+            orderSummary = (OrderSummary) extras.getSerializable("ORDER");
+            Log.d(TAG, "Order Summary in Pay Activity: " + orderSummary.userID);
+//            place = extras.getParcelable("PLACE");
+//            selectedUsers = (ArrayList<User>) extras.getSerializable(PARTICIPANTS);
+//            orderId = extras.getString("ORDER_ID");
+
         }catch(Exception e){
             amount = 0;
             persons = 0;
@@ -50,6 +66,7 @@ public class PayActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putDouble(SPILT_AMOUNT_TAG, amount);
         bundle.putInt(SPILT_COUNT_TAG, persons);
+        bundle.putSerializable("ORDER", orderSummary);
 
         EqualFragment equalFragment = new EqualFragment();
 

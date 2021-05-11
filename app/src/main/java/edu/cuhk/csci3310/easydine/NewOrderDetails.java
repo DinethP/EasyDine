@@ -1,5 +1,6 @@
 package edu.cuhk.csci3310.easydine;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.PhotoMetadata;
 import com.google.android.libraries.places.api.model.Place;
@@ -25,9 +28,11 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firestore.v1.DocumentTransform;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -57,6 +62,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private String AMOUNT_TAG = "AMOUNT";
     private String COUNT_TAG = "COUNT";
     private boolean isSingle = true;
+    private String firestoreOrderId;
 
     Button add_food_button;
     Button submit_button;
@@ -133,12 +139,28 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 } else{
                     Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
                     Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
-                    orders.add(order);
-                    intent.putExtra(COUNT_TAG, selectedUser.size());
-                    intent.putExtra(AMOUNT_TAG, sum);
-                    startActivity(intent);
-                }
+                    orders.add(order).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentReference> task) {
+                            if(task.isSuccessful()){
+                                Log.d(TAG, "Group order successfully saved");
+                                firestoreOrderId = task.getResult().getId();
+                                Log.d(TAG, "OrderID from group: " + firestoreOrderId);
 
+//                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
+//                                intent.putExtra("PLACE", place);
+//                                intent.putExtra("ORDER_ID", firestoreOrderId);
+                                OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
+                                intent.putExtra(COUNT_TAG, selectedUser.size());
+                                intent.putExtra(AMOUNT_TAG, sum);
+                                intent.putExtra("ORDER", orderSummary);
+                                startActivity(intent);
+                            } else {
+                                Log.d(TAG, "Error saving order: ", task.getException());
+                            }
+                        }
+                    });
+                }
 
 //                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
 //                toast.show();
