@@ -71,13 +71,17 @@ public class PieChartFragment extends Fragment {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         List<String> friends = (List<String>) document.get("friends");
-
-                        // Increment count
-                        if (friendCounts.containsKey(friends.size())) {
-                            friendCounts.put(friends.size(), friendCounts.get(friends.size()) + 1);
-                        } else {
-                            friendCounts.put(friends.size(), 1);
+                        if (friends == null){
+                            friendCounts.put(0, 1);
+                        }else{
+                            // Increment count
+                            if (friendCounts.containsKey(friends.size())) {
+                                friendCounts.put(friends.size(), friendCounts.get(friends.size()) + 1);
+                            } else {
+                                friendCounts.put(friends.size(), 1);
+                            }
                         }
+
                     }
 
                     for (Map.Entry<Integer, Integer> entry : friendCounts.entrySet()) {
