@@ -36,6 +36,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentChange;
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //navigation menu clickable items
         navigationView.setNavigationItemSelectedListener(this);
         //  set initial checked nav item
-        navigationView.setCheckedItem(R.id.nav_dashboard);
+        // navigationView.setCheckedItem(R.id.nav_dashboard);
 
         // set up recyclerview
         mRecyclerView = findViewById(R.id.recyclerview);
@@ -185,13 +186,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        String email = user.getEmail();
         switch (item.getItemId()){
-            case R.id.nav_dashboard:
+            case R.id.nav_new_orders:
+                Intent newOrderintent = new Intent(MainActivity.this, PlacesActivity.class);
+                startActivity(newOrderintent);
                 break;
-            case R.id.nav_profile:
-                Intent profileIntent = new Intent(MainActivity.this, MyProfile.class);
-                startActivity(profileIntent);
+            case R.id.nav_past_orders:
+                Intent pastOrderIntent = new Intent(MainActivity.this, PastOrdersActivity.class);
+                pastOrderIntent.putExtra("accountName", email);
+                startActivity(pastOrderIntent);
                 break;
+            case R.id.nav_split_bill:
+                Intent splitBillIntent = new Intent(MainActivity.this, PayActivity.class);
+                startActivity(splitBillIntent);
+                break;
+            case R.id.nav_analytics:
+                Intent analyticsIntent = new Intent(MainActivity.this, AnalyticsActivity.class);
+                analyticsIntent.putExtra("accountName", email);
+                startActivity(analyticsIntent);
+                break;
+
             case R.id.logout:
                 // open loginActivity again to logout
                 SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -199,6 +215,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 editor.commit();
                 Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(loginIntent);
+
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;

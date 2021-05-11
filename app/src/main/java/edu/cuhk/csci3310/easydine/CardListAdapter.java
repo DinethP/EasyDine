@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -27,13 +28,13 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
 
         // ImageView imageView1, imageView2;
         TextView textView;
-
+        ImageView imageView;
         final CardListAdapter mAdapter;
 
         public CardViewHolder(@NonNull View itemView, CardListAdapter mAdapter) {
             super(itemView);
             textView = itemView.findViewById(R.id.textView);
-
+            imageView = itemView.findViewById(R.id.imageView);
             this.mAdapter = mAdapter;
         }
     }
@@ -55,6 +56,24 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         String cardName = mCardNameList.get(position);
         holder.textView.setText(cardName);
+        switch (position){
+            case 0:
+                holder.imageView.setImageResource(R.drawable.new_order);
+                break;
+            case 1:
+                holder.imageView.setImageResource(R.drawable.past_order);
+                break;
+            case 2:
+                holder.imageView.setImageResource(R.drawable.split_bill);
+                break;
+            case 3:
+                holder.imageView.setImageResource(R.drawable.analytics);
+                break;
+            case 4:
+                holder.imageView.setImageResource(R.drawable.about_us);
+                break;
+        }
+
         // make the cards clickable
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override

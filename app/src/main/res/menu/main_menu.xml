@@ -2,34 +2,34 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_dashboard"
-            android:icon="@drawable/home_icon"
-            android:title="Dashboard" />
+            android:id="@+id/nav_new_orders"
+            android:icon="@drawable/new_order"
+            android:title="New Orders" />
         <item
-            android:id="@+id/nav_profile"
+            android:id="@+id/nav_past_orders"
+            android:icon="@drawable/past_order"
+            android:title="Past Orders" />
+
+        <item
+            android:id="@+id/nav_split_bill"
+            android:icon="@drawable/money"
+            android:title="Quick Bill Split"/>
+
+        <item
+            android:id="@+id/nav_analytics"
+            android:icon="@drawable/analytics"
+            android:title="Analytics"/>
+
+        <item
+            android:id="@+id/nav_about_us"
+            android:icon="@drawable/home_icon"
+            android:title="About us"/>
+
+        <item
+            android:id="@+id/logout"
             android:icon="@drawable/logout_icon"
-            android:title="Profile" />
+            android:title="Logout" />
+
     </group>
-    <item android:title="Meals">
-        <menu>
-            <group android:checkableBehavior="single">
-                <item
-                    android:id="@+id/nav_past_orders"
-                    android:icon="@drawable/home_icon"
-                    android:title="Past Orders" />
-                <item
-                    android:id="@+id/map"
-                    android:icon="@drawable/logout_icon"
-                    android:title="Map" />
-            </group>
-        </menu>
-    </item>
-    <item android:title="Settings">
-        <menu>
-            <item
-                android:id="@+id/logout"
-                android:icon="@drawable/logout_icon"
-                android:title="Logout" />
-        </menu>
-    </item>
+
 </menu>
