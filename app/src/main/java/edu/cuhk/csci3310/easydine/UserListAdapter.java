@@ -44,25 +44,6 @@ public class UserListAdapter extends RecyclerView.Adapter {
                     }
                 }
             });
-//            userView.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                // TODO: De-selecting doesn't work as the boolean value is not saved
-//                public void onClick(View view) {
-//                    // deselect item
-//                    if(isSelected){
-//                        userView.setBackgroundColor(context.getColor(R.color.white));
-//                    }
-//                    // select item
-//                    else {
-//                        int position = getLayoutPosition();
-//                        Log.d(TAG, "Clicked position is: " + position);
-//                        Log.d(TAG, "Selected user is: " + userNames.get(position).getUserName());
-//                        // TODO: input data is a string, convert userNames to User objects instead
-//                        selectedParticpants.add(userNames.get(position));
-//                        userView.setBackgroundColor(context.getColor(R.color.user_selected));
-//                    }
-//                }
-//            });
         }
     }
 

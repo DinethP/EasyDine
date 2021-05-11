@@ -152,7 +152,7 @@ public class EqualFragment extends Fragment {
                     persons = 0;
                     textView.setText(String.valueOf(0));
                 }
-                userToPay = String.valueOf( amount / (persons) );
+                userToPay = ( amount / (persons) );
             }
         });
 
@@ -196,7 +196,7 @@ public class EqualFragment extends Fragment {
                     textView.setText(String.valueOf(0));
                 }
                 
-                userToPay = String.valueOf( amount / currentPersons );
+                userToPay =( amount / currentPersons );
             }
         });
 
