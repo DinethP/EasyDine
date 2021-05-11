@@ -1,6 +1,7 @@
 package edu.cuhk.csci3310.easydine;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -11,16 +12,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import io.perfmark.Link;
 
@@ -34,12 +47,15 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
     private final LinkedList<String> mDateList;
     private final LinkedList<Integer> mFriendsList;
     private final LinkedList<Boolean> mPayedList;
+
+    // private double amount;
+    // private ArrayList<String> friendsList = new ArrayList<>();
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     // Implement OnClickListener to allow for master-detail navigation
     class PastOrdersViewHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
-
+        LinearLayout cardItem;
         ImageView restaurantImageView;
         TextView nameTextView, dateTextView, friendsTextView;
         Button isPayedButton;
@@ -53,6 +69,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
             dateTextView = itemView.findViewById(R.id.pastOrdersDate);
             friendsTextView = itemView.findViewById(R.id.pastOrdersFriends);
             isPayedButton = itemView.findViewById(R.id.isPayedBtn);
+            cardItem = itemView.findViewById(R.id.cardItem);
             this.mAdapter = adapter;
 
             // Event handling registration, page navigation goes here
@@ -96,6 +113,33 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         String mDate = mDateList.get(position);
         int mFriends = mFriendsList.get(position);
         Boolean mIsPayed = mPayedList.get(position);
+        double[] amount = new double[]{0};
+        ArrayList<String> friendsList = new ArrayList<>();
+
+        db.collection("orders").document(orderId).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    amount[0] = document.getDouble("amount");
+
+                    // get the names of the friends
+                    List<Map> friends = (List<Map>) document.get("friends");
+                    if (friends != null){
+                        friendsList.clear();
+                        for (Map map: friends){
+                            String s = map.values().toString();
+                            s = s.replaceAll("[\\[\\]]","");
+                            friendsList.add(s);
+                        }
+                        Log.d("MAP_CHECK", String.valueOf(friendsList));
+                    }
+
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
 
         // Set up View items for this row (position)
         new DownloadImageTask(holder.restaurantImageView).execute(mImageURL);
@@ -117,6 +161,23 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
                 db.collection("orders").document(orderId).update("isPayed", true);
                 mPayedList.set(position, true);
                 notifyDataSetChanged();
+            }
+        });
+        // when a card is clicked
+        holder.cardItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(context, PastOrderDetail.class);
+                // get record with orderId
+
+                intent.putExtra("IMAGE", mImageURL);
+                intent.putExtra("NAME", mRestaurantName);
+                intent.putExtra("DATE", mDate);
+                intent.putExtra("AMOUNT", amount[0]);
+                intent.putExtra("COUNT_PEOPLE", mFriends);
+                intent.putStringArrayListExtra("FRIENDS", friendsList);
+
+                holder.cardItem.getContext().startActivity(intent);
             }
         });
     }
