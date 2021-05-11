@@ -17,7 +17,6 @@ import androidx.fragment.app.FragmentManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,21 +27,22 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 public class EqualFragment extends Fragment {
 
-    private int persons;
+    private ArrayList<User> persons;
     private double amount;
-    private String TAG = "EqualFragment";
     private boolean modified = false;
 
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
-    private String PARTICIPANTS = "PARTICIPANTS";
-    private Double userToPay;
+    private String userToPay;
 
     private String CHANNEL_ID = "channelId";
     private String CHANNEL_NAME = "channelName";
@@ -51,9 +51,19 @@ public class EqualFragment extends Fragment {
 
     private OrderSummary orderSummary;
     private ArrayList<Double> moneyOwed = new ArrayList<>();
-    FirebaseFirestore db = FirebaseFirestore.getInstance();
     private boolean openedFromNewOrderDetailsActivity = false;
 
+    private String userID, restaurant, orderTime, orderID;
+    private double amountPaid, hostOwes;
+    private ArrayList<User> friends;
+    private LinkedList<String> dishes;
+    private LinkedList<Double> prices;
+    private String imageURL;
+    private boolean isPayed;
+
+    Button calButton;
+
+    private FirebaseFirestore mDatabase;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +79,40 @@ public class EqualFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_equal, container, false);
+
+        calButton = view.findViewById(R.id.cal_button);
+        calButton.setVisibility(View.GONE);
+        // Inflate the layout for this fragment
+        if (getArguments() != null){
+            amount = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
+//            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
+
+            // check if we should store order summary to firestore
+            if(getArguments().getSerializable("ORDER") != null){
+                orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
+                persons = orderSummary.friends;
+                openedFromNewOrderDetailsActivity = true;
+                calButton.setVisibility(View.VISIBLE);
+            }
+        }
+        else{
+            amount = 0;
+            persons = new ArrayList<User>();
+        }
+
+        // init moneyOwed list
+        if (persons != null){
+            for (int i = 0;i <persons.size()+1; i++){
+                moneyOwed.add(i, 0.0);
+            }
+        }else{
+            for (int i = 0;i < 7; i++){
+                moneyOwed.add(i, 0.0);
+            }
+            calButton.setVisibility(View.VISIBLE);
+        }
+
 
         EditText editText1 = (EditText) view.findViewById(R.id.number_of_customers);
         EditText editText3 = (EditText) view.findViewById(R.id.amount);
@@ -79,37 +121,31 @@ public class EqualFragment extends Fragment {
 
         editText1.setHint("No. of people");
         editText3.setHint("Amount");
-        cal_button.setVisibility(View.GONE);
+        if (persons != null){
+            editText1.setText(String.valueOf(persons.size()+1));
+            textView.setText(String.valueOf( amount / (persons.size()+1) ));
+            userToPay = String.valueOf( amount / (persons.size()+1) );
+        } else{
+            editText1.setText(String.valueOf(1));
+            textView.setText(String.valueOf(0));
+            userToPay = String.valueOf(0);
+        }
 
-        if (getArguments() != null){
-            amount = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
-            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
-            // bit of a hack, because for some reason even if no arguments are set, getArguments is not null
-            // check if we should store order summary to firestore
-            if(getArguments().getSerializable("ORDER") != null){
-                orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
-                openedFromNewOrderDetailsActivity = true;
-                cal_button.setVisibility(View.VISIBLE);
-            }
-//            Log.d(TAG, "Order summary not null: " + orderSummary.userID);
-        }
-        else{
-            amount = 0;
-            persons = 1;
-        }
-        editText1.setText(String.valueOf(persons+1));
         editText3.setText(String.valueOf(amount));
-//        textView.setText(String.valueOf( amount / (persons+1) ));
-        textView.setText(String.format("%.2f", amount / (persons+1) ));
 
-        userToPay = ( amount / (persons+1) );
-        if(openedFromNewOrderDetailsActivity){
-            Log.d(TAG, "openedFormNewOrderDetails: " + openedFromNewOrderDetailsActivity);
-            for(User user : orderSummary.friends){
-                moneyOwed.add(userToPay);
-            }
-            orderSummary.moneyOwed = moneyOwed;
-            orderSummary.hostOwes = userToPay;
+
+
+        if (orderSummary != null){
+            orderID = orderSummary.orderID;
+            userID = orderSummary.userID;
+            restaurant = orderSummary.restaurant;
+            amountPaid = orderSummary.amount;
+            orderTime = orderSummary.orderTime;
+            friends = orderSummary.friends;
+            dishes = orderSummary.dishes;
+            prices = orderSummary.prices;
+            imageURL = orderSummary.imageURL;
+            isPayed = orderSummary.isPayed;
         }
 
         editText1.addTextChangedListener(new TextWatcher() {
@@ -126,33 +162,21 @@ public class EqualFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
-                persons = Integer.parseInt(s);
-//                textView.setText(String.valueOf( amount / (persons+1) ));
-                textView.setText(String.format("%.2f", amount / (persons+1) ));
-
-//                userToPay = String.valueOf( amount / (persons+1) );
-                userToPay = ( amount / (persons+1) ) ;
-                if(openedFromNewOrderDetailsActivity){
-                    for(User user : orderSummary.friends){
-                        moneyOwed.add(userToPay);
-                    }
-                    orderSummary.moneyOwed = moneyOwed;
-                    orderSummary.hostOwes = userToPay;
-                }
+                int currentPersons;
                 modified = true;
                 if (s.isEmpty()){
-                    persons = 0;
+                    currentPersons = 0;
                     textView.setText(String.valueOf(0));
                 }
 
                 try {
-                    persons = Integer.parseInt(s);
-                    textView.setText(String.valueOf( amount / (persons) ));
+                    currentPersons = Integer.parseInt(s);
+                    textView.setText(String.format("%.1f", amount / (currentPersons)));
                 }catch (Exception e){
-                    persons = 0;
+                    currentPersons = 0;
                     textView.setText(String.valueOf(0));
                 }
-                userToPay = ( amount / (persons) );
+                userToPay = String.valueOf( amount / (currentPersons) );
             }
         });
 
@@ -170,33 +194,25 @@ public class EqualFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
-                amount = Double.parseDouble(s);
-//                textView.setText(String.valueOf( amount / (persons+1) ));
-                textView.setText(String.format("%.2f", amount / (persons+1) ));
-                userToPay = ( amount / (persons+1) );
-                if(openedFromNewOrderDetailsActivity){
-                    for(User user : orderSummary.friends){
-                        moneyOwed.add(userToPay);
-                    }
-                    orderSummary.moneyOwed = moneyOwed;
-                    orderSummary.hostOwes = userToPay;
-                }
-                int currentPersons = 0;
+                int currentPersons = persons == null ? 1 : persons.size();
                 if (s.isEmpty()){
                     amount = 0;
                     textView.setText(String.valueOf(0));
                 }
                 try {
                     amount = Double.parseDouble(s);
-                    currentPersons = modified ? persons : persons+1;
+                    if (persons != null)
+                        currentPersons = modified ? currentPersons : currentPersons+1;
+                    else
+                        currentPersons = 1;
                     textView.setText(String.valueOf( amount / currentPersons ));
 
                 }catch(Exception e){
                     amount = 0;
                     textView.setText(String.valueOf(0));
                 }
-                
-                userToPay =( amount / currentPersons );
+
+                userToPay = String.valueOf( amount / currentPersons );
             }
         });
 
@@ -204,14 +220,24 @@ public class EqualFragment extends Fragment {
         cal_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(openedFromNewOrderDetailsActivity){
-                    db.collection("orderSummary").add(orderSummary);
+                // send orderSummary to firebase
+                mDatabase = FirebaseFirestore.getInstance();
+                CollectionReference orderSummary = mDatabase.collection("orderSummary");
+
+                if (persons != null){
+                    // get equal amount paid
+                    for (int i = 0; i < persons.size()+1; i++){
+                        moneyOwed.set(i, Double.parseDouble(textView.getText().toString()));
+                    }
+                    OrderSummary summary = new OrderSummary(orderID, userID, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
+                    //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
+                    orderSummary.add(summary);
                 }
 
                 // show notification on how much to pay
                 Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                         .setContentTitle("Get ready to pay")
-                        .setContentText(String.format("You need to pay $%.2f for the recent order", userToPay))
+                        .setContentText(String.format("You need to pay $%s for the recent order", userToPay))
                         .setSmallIcon(R.drawable.ic_notification)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentIntent(pendingIntent)

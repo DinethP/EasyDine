@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,10 +32,13 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
 public class PercentageFragment extends Fragment {
 
@@ -60,6 +64,16 @@ public class PercentageFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     private boolean openedFromNewOrderDetailsActivity = false;
 
+    private String userID, restaurant, orderTime, orderID;
+    private double amountPaid, hostOwes;
+    private ArrayList<User> friends;
+    private LinkedList<String> dishes;
+    private LinkedList<Double> prices;
+    private String imageURL;
+    private boolean isPayed;
+
+    private FirebaseFirestore mDatabase;
+
     TextView textView;
     Button calButton;
 
@@ -67,7 +81,7 @@ public class PercentageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver, new IntentFilter("update_percentage"));
-
+        LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver2, new IntentFilter("PASS_AMOUNT"));
         // create notification channel
         createNotificationChannel();
         // create pending intent so that clicking the notification will open the activity
@@ -105,6 +119,19 @@ public class PercentageFragment extends Fragment {
             total = 0;
             persons = new ArrayList<User>();
         }
+
+        // init moneyOwed list
+        if (persons != null){
+            for (int i = 0;i <persons.size()+1; i++){
+                moneyOwed.add(i, 0.0);
+            }
+        }else{
+            for (int i = 0;i < 7; i++){
+                moneyOwed.add(i, 0.0);
+            }
+            calButton.setVisibility(View.VISIBLE);
+        }
+
 
         //set up recyclerView
         recyclerView = view.findViewById(R.id.percentage_recyclerview);
@@ -151,6 +178,20 @@ public class PercentageFragment extends Fragment {
 
             }
         });
+
+        if (orderSummary != null){
+            orderID = orderSummary.orderID;
+            userID = orderSummary.userID;
+            restaurant = orderSummary.restaurant;
+            amountPaid = orderSummary.amount;
+            orderTime = orderSummary.orderTime;
+            friends = orderSummary.friends;
+            dishes = orderSummary.dishes;
+            prices = orderSummary.prices;
+            imageURL = orderSummary.imageURL;
+            isPayed = orderSummary.isPayed;
+        }
+
         // check if the percentage equals to 100
         // remind user if it is not
         // go to pastOrderActivity if yes
@@ -161,6 +202,15 @@ public class PercentageFragment extends Fragment {
                     Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
                     toast.show();
                 }else{
+                    // send orderSummary to firebase
+                    mDatabase = FirebaseFirestore.getInstance();
+                    CollectionReference orderSummary = mDatabase.collection("orderSummary");
+                    if (persons != null){
+                        OrderSummary summary = new OrderSummary(orderID, userID, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
+                        //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
+                        orderSummary.add(summary);
+                    }
+
                     // show notification on how much to pay
                     Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                             .setContentTitle("Get ready to pay")
@@ -196,6 +246,15 @@ public class PercentageFragment extends Fragment {
             String v = "Total Percentage: " + percentage;
             textView.setText(v);
 
+        }
+    };
+
+    public BroadcastReceiver broadcastReceiver2 = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            double amount = intent.getDoubleExtra("AMOUNT", 0);
+            int position = intent.getIntExtra("POSITION", 0);
+            moneyOwed.set(position, amount);
         }
     };
 
