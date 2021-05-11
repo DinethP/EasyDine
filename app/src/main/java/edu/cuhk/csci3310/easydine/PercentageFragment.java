@@ -202,11 +202,13 @@ public class PercentageFragment extends Fragment {
                     Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
                     toast.show();
                 }else{
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    String userName = user.getDisplayName();
                     // send orderSummary to firebase
                     mDatabase = FirebaseFirestore.getInstance();
                     CollectionReference orderSummary = mDatabase.collection("orderSummary");
                     if (persons != null){
-                        OrderSummary summary = new OrderSummary(orderID, userID, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
+                        OrderSummary summary = new OrderSummary(orderID, userID, userName, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
                         //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
                         orderSummary.add(summary);
                     }
@@ -222,7 +224,6 @@ public class PercentageFragment extends Fragment {
                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getActivity());
                     notificationManager.notify(NOTIFICATION_ID, notification);
                     Intent intent = new Intent(getActivity(), PastOrdersActivity.class);
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     String email = user.getEmail();
                     intent.putExtra("accountName", email);
                     startActivity(intent);

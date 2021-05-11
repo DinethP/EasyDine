@@ -17,6 +17,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -42,31 +43,33 @@ public class AddParticipantsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add_participants, container, false);
         Log.d(TAG, userNames.toString());
         // get all registered users from firestore
-        db.collection("users").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                // get currentUserId
-                String currUserUid = user.getUid();
-                if(task.isSuccessful()){
-                    for (QueryDocumentSnapshot document : task.getResult()){
-                        // add all users except current user
-                        if(document.getId().equals(currUserUid)) {
-                            continue;
-                        }
-                        else {
-                            userNames.add(document.toObject(User.class));
+        db.collection("users")
+                .orderBy("userName", Query.Direction.ASCENDING)
+                .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        // get currentUserId
+                        String currUserUid = user.getUid();
+                        if(task.isSuccessful()){
+                            for (QueryDocumentSnapshot document : task.getResult()){
+                                // add all users except current user
+                                if(document.getId().equals(currUserUid)) {
+                                    continue;
+                                }
+                                else {
+                                    userNames.add(document.toObject(User.class));
+                                }
+                            }
+                            // firestore takes time to load, so names get after view is created
+                            // so notify adpater to show  updated names
+                            userListAdapter.notifyDataSetChanged();
+                            Log.d(TAG, userNames.toString());
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
-                    // firestore takes time to load, so names get after view is created
-                    // so notify adpater to show  updated names
-                    userListAdapter.notifyDataSetChanged();
-                    Log.d(TAG, userNames.toString());
-                } else {
-                    Log.d(TAG, "Error getting documents: ", task.getException());
-                }
-            }
-        });
+                });
         recyclerView = view.findViewById(R.id.recyclerview);
         userListAdapter = new UserListAdapter(getContext(), userNames);
         recyclerView.setAdapter(userListAdapter);

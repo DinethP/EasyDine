@@ -63,6 +63,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private String COUNT_TAG = "COUNT";
     private boolean isSingle = true;
     private String firestoreOrderId;
+    private String userName;
 
     Button add_food_button;
     Button submit_button;
@@ -122,6 +123,10 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                 // get photo url from place api
                 String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + getPhotoRef(photoMetadata.toString()) + "&key=AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
                 String userID = user.getEmail();
+                userName = user.getDisplayName();
+                Log.d(TAG, "HelloWorld");
+                Log.d(TAG, "UserEmail: " + userID);
+                Log.d(TAG, "UserName: " + userName);
                 double sum = getSum(foodPrices);
                 // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
 
@@ -150,7 +155,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 //                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
 //                                intent.putExtra("PLACE", place);
 //                                intent.putExtra("ORDER_ID", firestoreOrderId);
-                                OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
+                                OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, userName, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
                                 intent.putExtra(COUNT_TAG, selectedUser.size());
                                 intent.putExtra(AMOUNT_TAG, sum);
                                 intent.putExtra("ORDER", orderSummary);

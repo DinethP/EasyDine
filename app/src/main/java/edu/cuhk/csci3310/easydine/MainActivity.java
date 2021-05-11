@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mRecyclerView = findViewById(R.id.recyclerview);
         mAdapter = new CardListAdapter(this, mCardName, userEmail);
         mRecyclerView.setAdapter(mAdapter);
-
+        // listen for orders collection changes
          db.collection("orders")
                  .addSnapshotListener(new EventListener<QuerySnapshot>() {
                 @Override
@@ -159,8 +159,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
                                     notificationManager.notify(NOTIFICATION_ID, notification);
-                                    break;
                                 }
+                                break;
                             case REMOVED:
                                 Log.d(TAG, "Removed document");
                                 break;
@@ -169,6 +169,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 }
             });
+
+        db.collection("orderSummary")
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot snapshots, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w("TAG", "listen:error", e);
+                            return;
+                        }
+
+                        for (DocumentChange dc : snapshots.getDocumentChanges()) {
+                            switch (dc.getType()) {
+                                case ADDED:
+                                    Log.d(TAG, "New document added");
+                                    break;
+                                case MODIFIED:
+                                    Log.d(TAG, "Document modified");
+                                    // create notification
+                                    // since the only time a order collection document will be modified is to mark the order as true, show a notification
+                                    ArrayList<Map> friends = (ArrayList<Map>) dc.getDocument().get("friends");
+                                    ArrayList<Map> moneyOwed = (ArrayList<Map>) dc.getDocument().get("moneyOwed");
+                                    String restaurant = (String) dc.getDocument().get("restaurant");
+                                    String hostName = (String) dc.getDocument().get("hostName");
+                                    String userID = dc.getDocument().getString("userID");
+
+                                    if(userID.equals(userEmail) || checkCurrUserInFriendsList(friends)){
+                                        int userIndexInList = getCurrUserInFriendsListPos(friends);
+                                        Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                                .setContentTitle(String.format("Order submitted by %s at %s", hostName, restaurant))
+                                                .setContentText(String.format("You need to pay $%s for the recent order", moneyOwed.get(userIndexInList)))
+                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                .setContentIntent(pendingIntent)
+                                                .build();
+
+                                        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
+                                        notificationManager.notify(NOTIFICATION_ID, notification);
+                                    }
+                                    break;
+                                case REMOVED:
+                                    break;
+                            }
+                        }
+                    }
+                });
 
         Log.d(TAG, "photo url: " + account.getPhotoUrl());
     }
@@ -223,5 +268,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         }
         return false;
+    }
+    private int getCurrUserInFriendsListPos(ArrayList<Map> friends){
+        Log.d(TAG, "Entered Check function");
+        Log.d(TAG, "size of friends list: " + friends.size());
+        int pos = 0;
+        for(int i = 0; i < friends.size(); i++){
+            Map entry = friends.get(i);
+            Log.d(TAG, "Friend name: " + entry.get("userName"));
+            if(entry.get("userName").equals(userDisplayName)){
+                pos = i;
+                break;
+            }
+        }
+        return pos;
     }
 }
