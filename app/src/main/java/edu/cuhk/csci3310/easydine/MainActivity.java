@@ -91,32 +91,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .addNextIntentWithParentStack(intent)
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Marked as paid")
-                .setContentText("Context text")
-                .setSmallIcon(R.drawable.ic_notification)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setContentIntent(pendingIntent)
-                .build();
-
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(this);
-
-        TextView dashTitle = findViewById(R.id.textView);
-        dashTitle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                notificationManager.notify(NOTIFICATION_ID, notification);
-            }
-        });
-// Create a reference to the orders collection
-//        CollectionReference orders = db.collection("orders");
-//
-//        // Filter query by userID
-//        Query query = orders.whereEqualTo("userID", userEmail);
-//
-//        // Get order history
-//        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-
         FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
         userEmail = account.getEmail();
         userDisplayName = account.getDisplayName();
@@ -175,13 +149,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
                                 if(userID.equals(userEmail) || checkCurrUserInFriendsList(friends)){
-                                        Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
-                                                .setContentTitle("Marked as paid")
-                                                .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
-                                                .setSmallIcon(R.drawable.ic_notification)
-                                                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                                .setContentIntent(pendingIntent)
-                                                .build();
+                                    Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
+                                            .setContentTitle("Marked as paid")
+                                            .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
+                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setContentIntent(pendingIntent)
+                                            .build();
 
                                     NotificationManagerCompat notificationManager = NotificationManagerCompat.from(MainActivity.this);
                                     notificationManager.notify(NOTIFICATION_ID, notification);

@@ -20,6 +20,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
     private double total;
     private double previous;
     private int persons;
+    private double userToPay;
 
     class ValueViewHolder extends RecyclerView.ViewHolder {
         EditText value;
@@ -74,10 +75,15 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
                 try {
                     intent.putExtra("value", Double.parseDouble(s));
+                    // current user is the first person on the list. So get that value for notification
+                    if(position == 0){
+                        userToPay = Double.parseDouble(s);
+                    }
                     intent.putExtra("PREVIOUS", previous);
                 } catch (Exception e) {
                     intent.putExtra("value", 0.0);
                     intent.putExtra("PREVIOUS", previous);
+                    userToPay = 0.0;
                 }
 
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
@@ -91,5 +97,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
         return persons == 0 ? 6 : persons+1;
     }
 
-
+    public double getUserToPayValue (){
+        return userToPay;
+    }
 }

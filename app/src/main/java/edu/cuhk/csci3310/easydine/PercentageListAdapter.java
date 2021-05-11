@@ -27,6 +27,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     private double total;
     private double previous;
     private int persons;
+    private double userToPay;
 
     class PercentageViewHolder extends RecyclerView.ViewHolder{
 
@@ -86,14 +87,19 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
                 Intent intent = new Intent("update_percentage");
                 try {
                     String s = editable.toString();
-                    double value = Double.parseDouble(s) / 100 * total;
+                    Double value = Double.parseDouble(s) / 100 * total;
                     holder.amount.setText(String.format("%.1f", value));
+                    // current user is the first person on the list. So get that value for notification
+                    if(position == 0){
+                        userToPay = value;
+                    }
                     intent.putExtra("PERCENTAGE", Double.parseDouble(s));
                     intent.putExtra("PREVIOUS", previous);
                 }catch (Exception e){
                     holder.amount.setText(String.format("%.1f", 0.0));
                     intent.putExtra("PERCENTAGE", 0.0);
                     intent.putExtra("PREVIOUS", previous);
+                    userToPay = 0.0;
                 }
                 LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
             }
@@ -109,5 +115,9 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     @Override
     public int getItemCount() {
         return persons == 0 ? 6 : persons+1;
+    }
+
+    public double getUserToPayValue (){
+        return userToPay;
     }
 }

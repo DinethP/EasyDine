@@ -1,11 +1,19 @@
 package edu.cuhk.csci3310.easydine;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,6 +48,11 @@ public class PercentageFragment extends Fragment {
     private String SPILT_AMOUNT_TAG = "SPILT_AMOUNT";
     private String SPILT_COUNT_TAG = "SPILT_COUNT";
 
+    private String CHANNEL_ID = "channelId";
+    private String CHANNEL_NAME = "channelName";
+    private int NOTIFICATION_ID = 0;
+    private PendingIntent pendingIntent;
+
     TextView textView;
     Button calButton;
 
@@ -47,11 +60,20 @@ public class PercentageFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LocalBroadcastManager.getInstance(this.getContext()).registerReceiver(broadcastReceiver, new IntentFilter("update_percentage"));
+
+        // create notification channel
+        createNotificationChannel();
+        // create pending intent so that clicking the notification will open the activity
+        Intent intent = new Intent(this.getContext(), LoginActivity.class);
+        pendingIntent = TaskStackBuilder.create(this.getContext())
+                .addNextIntentWithParentStack(intent)
+                .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         percentage = 0;
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_percentage, container, false);
@@ -123,6 +145,16 @@ public class PercentageFragment extends Fragment {
                     Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
                     toast.show();
                 }else{
+                    // show notification on how much to pay
+                    Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
+                            .setContentTitle("Get ready to pay")
+                            .setContentText(String.format("You need to pay $%s for the recent order", percentageListAdapter.getUserToPayValue()))
+                            .setSmallIcon(R.drawable.ic_notification)
+                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setContentIntent(pendingIntent)
+                            .build();
+                    NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getActivity());
+                    notificationManager.notify(NOTIFICATION_ID, notification);
                     Intent intent = new Intent(getActivity(), PastOrdersActivity.class);
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     String email = user.getEmail();
@@ -150,4 +182,12 @@ public class PercentageFragment extends Fragment {
 
         }
     };
+
+    private void createNotificationChannel() {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+            NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
+            NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+    }
 }
