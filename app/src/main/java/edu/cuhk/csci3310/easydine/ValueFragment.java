@@ -128,7 +128,7 @@ public class ValueFragment extends Fragment {
             for (int i = 0;i < 7; i++){
                 moneyOwed.add(i, 0.0);
             }
-            calButton.setVisibility(View.VISIBLE);
+            // calButton.setVisibility(View.VISIBLE);
         }
 
         EditText amount = view.findViewById(R.id.amount);

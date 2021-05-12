@@ -115,10 +115,11 @@ public class EqualFragment extends Fragment {
                 moneyOwed.add(i, 0.0);
             }
         }else{
+            // quick split
             for (int i = 0;i < 7; i++){
                 moneyOwed.add(i, 0.0);
             }
-            calButton.setVisibility(View.VISIBLE);
+            // calButton.setVisibility(View.VISIBLE);
         }
 
 
@@ -131,7 +132,7 @@ public class EqualFragment extends Fragment {
         editText3.setHint("Amount");
         if (persons != null){
             editText1.setText(String.valueOf(persons.size()+1));
-            textView.setText(String.format("%.2f", amount / (persons.size()+1)));
+            textView.setText(String.format("Amount: %.2f", amount / (persons.size()+1)));
             userToPay = String.format("%.2f", amount / (persons.size()+1));
         } else{
             editText1.setText(String.valueOf(1));
@@ -155,7 +156,7 @@ public class EqualFragment extends Fragment {
             imageURL = orderSummary.imageURL;
             isPayed = orderSummary.isPayed;
         }
-
+        // no of customers
         editText1.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -179,7 +180,7 @@ public class EqualFragment extends Fragment {
 
                 try {
                     currentPersons = Integer.parseInt(s);
-                    textView.setText(String.format("%.2f", amount / (currentPersons)));
+                    textView.setText(String.format("Amount: %.2f", amount / (currentPersons)));
                 }catch (Exception e){
                     currentPersons = 0;
                     textView.setText(String.valueOf(0));
@@ -187,7 +188,7 @@ public class EqualFragment extends Fragment {
                 userToPay = String.format("%.2f", amount / (currentPersons));
             }
         });
-
+        // amount
         editText3.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -209,11 +210,11 @@ public class EqualFragment extends Fragment {
                 }
                 try {
                     amount = Double.parseDouble(s);
-                    if (persons != null)
+                    if (persons != null) // new order
                         currentPersons = modified ? currentPersons : currentPersons+1;
                     else
-                        currentPersons = 1;
-                    textView.setText(String.format("%.2f", amount / (persons.size()+1)));
+                        currentPersons = Integer.parseInt(editText1.getText().toString());
+                    textView.setText(String.format("Amount: %.2f", amount / currentPersons));
 
                 }catch(Exception e){
                     amount = 0;

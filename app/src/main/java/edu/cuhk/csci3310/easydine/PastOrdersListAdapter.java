@@ -1,5 +1,6 @@
 package edu.cuhk.csci3310.easydine;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -178,6 +179,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
                 intent.putStringArrayListExtra("FRIENDS", friendsList);
 
                 holder.cardItem.getContext().startActivity(intent);
+                ((Activity)context).finish();
             }
         });
     }
