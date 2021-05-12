@@ -66,8 +66,6 @@ public class AnalyticsActivity extends AppCompatActivity {
                         getIntent().putExtra("graph", 2);
                     }
                 }
-
-                // Terrible way to redraw the fragment, hopefully we can fix
                 recreate();
             }
         });

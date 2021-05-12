@@ -85,17 +85,20 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                     // 1st card: new order
                     case 0:
                         intent = new Intent(view.getContext(), PlacesActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         view.getContext().startActivity(intent);
                         break;
                     // 2nd card: past orders
                     case 1:
                         intent = new Intent(view.getContext(), PastOrdersActivity.class);
                         intent.putExtra("accountName", accountName);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         view.getContext().startActivity(intent);
                         break;
                     // 3rd card: split bill
                     case 2:
                         intent = new Intent(view.getContext(), PayActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         view.getContext().startActivity(intent);
                         break;
                     // 4th card: analytics
@@ -103,6 +106,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                         intent = new Intent(view.getContext(), AnalyticsActivity.class);
                         intent.putExtra("accountName", accountName);
                         intent.putExtra("graph", 1);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         view.getContext().startActivity(intent);
                         break;
                 }

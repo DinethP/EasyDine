@@ -50,10 +50,6 @@ public class PayActivity extends AppCompatActivity {
             persons = extras.getInt(COUNT_TAG, 1);
             orderSummary = (OrderSummary) extras.getSerializable("ORDER");
             Log.d(TAG, "Order Summary in Pay Activity: " + orderSummary.userID);
-//            place = extras.getParcelable("PLACE");
-//            selectedUsers = (ArrayList<User>) extras.getSerializable(PARTICIPANTS);
-//            orderId = extras.getString("ORDER_ID");
-
         }catch(Exception e){
             amount = 0;
             persons = 0;
