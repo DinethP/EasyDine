@@ -30,7 +30,8 @@ public class UserListAdapter extends RecyclerView.Adapter {
             Boolean isSelected = false;
             Log.d(TAG, "In UserListViewHolder constructor");
             userName = (CheckedTextView) itemView.findViewById(R.id.checkedTextView);
-            userView = (ConstraintLayout) itemView.findViewById(R.id.user_layout);
+            // checkbox will be unchecked on create
+            userName.setChecked(false);
             userName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

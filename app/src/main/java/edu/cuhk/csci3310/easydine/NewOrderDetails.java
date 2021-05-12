@@ -58,6 +58,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     private ArrayList<String> participantNames = new ArrayList<String>();
     private ArrayList<User> selectedUser = new ArrayList<>();
     private ListView particpantsList;
+    private TextView participantsHeading;
     private FirebaseFirestore mDatabase;
     private String AMOUNT_TAG = "AMOUNT";
     private String COUNT_TAG = "COUNT";
@@ -71,34 +72,41 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_order_details);
-        if(!getIntent().getBooleanExtra("FLAG", false)){
+        particpantsList = findViewById(R.id.participants_view);
+        participantsHeading = findViewById(R.id.participants_view_heading);
+        particpantsList.setVisibility(View.GONE);
+        participantsHeading.setVisibility(View.GONE);
+
+        add_food_button = findViewById(R.id.add_food_button);
+        submit_button = findViewById(R.id.submit_button);
+        add_food_button = findViewById(R.id.add_food_button);
+        submit_button = findViewById(R.id.submit_button);
+
+        Bundle bundle = getIntent().getExtras();
+        place = bundle.getParcelable("PLACE");
+        isSingle = bundle.getBoolean("SINGLE_ORDER");
+        selectedUser = (ArrayList<User>) bundle.getSerializable("PARTICIPANTS");
+        // show participants section only if it is a group order
+        if(!isSingle){
+            // TODO: BUG HERE
             selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
-            Log.d(TAG, "Selected participants in NewOrderDetails: " + selectedParticipants.toString());
             // extract names from User objects
             for(User user : selectedParticipants){
                 participantNames.add(user.getUserName());
             }
-            isSingle = false;
+            // convert arraylist to string
+            String[] namesArray = (String[]) participantNames.toArray(new String[0]);
+            particpantsList.setAdapter(new ArrayAdapter<String>(NewOrderDetails.this, R.layout.participantslist_item, R.id.text_name, namesArray));
+
+            particpantsList.setVisibility(View.VISIBLE);
+            participantsHeading.setVisibility(View.VISIBLE);
         }
 
-        particpantsList = findViewById(R.id.participants_view);
-        // convert arraylist to string
-        String[] namesArray = (String[]) participantNames.toArray(new String[0]);
-        particpantsList.setAdapter(new ArrayAdapter<String>(NewOrderDetails.this, R.layout.participantslist_item, R.id.text_name, namesArray));
-        add_food_button = findViewById(R.id.add_food_button);
-        submit_button = findViewById(R.id.submit_button);
-
-        add_food_button = findViewById(R.id.add_food_button);
-        submit_button = findViewById(R.id.submit_button);
         // connect recyclerview to adapter
         recyclerView = findViewById(R.id.recyclerview);
         foodListAdapter = new FoodListAdapter(this, foodNames, foodPrices);
         recyclerView.setAdapter(foodListAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        Bundle bundle = getIntent().getExtras();
-        place = bundle.getParcelable("PLACE");
-        selectedUser = (ArrayList<User>) bundle.getSerializable("PARTICIPANTS");
 
         add_food_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,65 +118,65 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         submit_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mDatabase = FirebaseFirestore.getInstance();
-                CollectionReference orders = mDatabase.collection("orders");
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                String restaurantName = place.getName();
-                List<PhotoMetadata> metadata = place.getPhotoMetadatas();
-                final PhotoMetadata photoMetadata = metadata.get(0);
-                // Log.d("photoMetadata",photoMetadata.toString());
-                // Log.d("photoMetadata", getPhotoRef(photoMetadata.toString()));
-
-                // get photo url from place api
-                String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + getPhotoRef(photoMetadata.toString()) + "&key=AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
-                String userID = user.getEmail();
-                userName = user.getDisplayName();
-                Log.d(TAG, "HelloWorld");
-                Log.d(TAG, "UserEmail: " + userID);
-                Log.d(TAG, "UserName: " + userName);
-                double sum = getSum(foodPrices);
-                // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
-
-                String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
-
-
-
-
-                if(isSingle){
-                    Intent intent = new Intent(NewOrderDetails.this, PastOrdersActivity.class);
-                    Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, true);
-                    orders.add(order);
-                    intent.putExtra("accountName", userID);
-                    startActivity(intent);
-                } else{
-                    Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
-                    Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
-                    orders.add(order).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
-                        @Override
-                        public void onComplete(@NonNull Task<DocumentReference> task) {
-                            if(task.isSuccessful()){
-                                Log.d(TAG, "Group order successfully saved");
-                                firestoreOrderId = task.getResult().getId();
-                                Log.d(TAG, "OrderID from group: " + firestoreOrderId);
-
-//                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
-//                                intent.putExtra("PLACE", place);
-//                                intent.putExtra("ORDER_ID", firestoreOrderId);
-                                OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, userName, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
-                                intent.putExtra(COUNT_TAG, selectedUser.size());
-                                intent.putExtra(AMOUNT_TAG, sum);
-                                intent.putExtra("ORDER", orderSummary);
-                                startActivity(intent);
-                            } else {
-                                Log.d(TAG, "Error saving order: ", task.getException());
-                            }
-                        }
-                    });
+                // only proceed if at least one food item is enters
+                if(foodNames.size() == 0){
+                    Toast.makeText(getApplicationContext(), "Please enter the food eaten", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    mDatabase = FirebaseFirestore.getInstance();
+                    CollectionReference orders = mDatabase.collection("orders");
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-//                Toast toast =  Toast.makeText(getApplicationContext(), "Order submitted", Toast.LENGTH_SHORT);
-//                toast.show();
+                    String restaurantName = place.getName();
+                    List<PhotoMetadata> metadata = place.getPhotoMetadatas();
+                    final PhotoMetadata photoMetadata = metadata.get(0);
+                    // Log.d("photoMetadata",photoMetadata.toString());
+                    // Log.d("photoMetadata", getPhotoRef(photoMetadata.toString()));
+
+                    // get photo url from place api
+                    String imageURL = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=" + getPhotoRef(photoMetadata.toString()) + "&key=AIzaSyA4A0EkXxHGQ_0qTMcKvrcwhuQaJJBklPc";
+                    String userID = user.getEmail();
+                    userName = user.getDisplayName();
+                    Log.d(TAG, "HelloWorld");
+                    Log.d(TAG, "UserEmail: " + userID);
+                    Log.d(TAG, "UserName: " + userName);
+                    double sum = getSum(foodPrices);
+                    // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
+                    String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
+
+                    if(isSingle){
+                        Intent intent = new Intent(NewOrderDetails.this, MainActivity.class);
+                        Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, true);
+                        orders.add(order);
+                        intent.putExtra("accountName", userID);
+                        Toast.makeText(getApplicationContext(), "Personal order submitted", Toast.LENGTH_SHORT).show();
+                        startActivity(intent);
+                    } else{
+                        Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
+                        Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
+                        orders.add(order).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
+                            @Override
+                            public void onComplete(@NonNull Task<DocumentReference> task) {
+                                if(task.isSuccessful()){
+                                    Log.d(TAG, "Group order successfully saved");
+                                    firestoreOrderId = task.getResult().getId();
+                                    Log.d(TAG, "OrderID from group: " + firestoreOrderId);
+
+    //                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
+    //                                intent.putExtra("PLACE", place);
+    //                                intent.putExtra("ORDER_ID", firestoreOrderId);
+                                    OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, userName, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
+                                    intent.putExtra(COUNT_TAG, selectedUser.size());
+                                    intent.putExtra(AMOUNT_TAG, sum);
+                                    intent.putExtra("ORDER", orderSummary);
+                                    startActivity(intent);
+                                } else {
+                                    Log.d(TAG, "Error saving order: ", task.getException());
+                                }
+                            }
+                        });
+                    }
+                }
             }
         });
 

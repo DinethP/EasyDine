@@ -198,11 +198,21 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
-                if(!isSingle)
-                    intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
                 intent.putExtra("PLACE", place);
-                intent.putExtra("FLAG", isSingle);
-                startActivity(intent);
+                intent.putExtra("SINGLE_ORDER", isSingle);
+                if(!isSingle){
+                    // can only go to next activity if participants are selected
+                    if (addParticipantsFragment.getSelectedParticpants().size() > 0){
+                        intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
+                        startActivity(intent);
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "No participants selected", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                else {
+                    startActivity(intent);
+                }
             }
         });
         // default single order radio button is checked
