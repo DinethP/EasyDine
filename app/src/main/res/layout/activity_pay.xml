@@ -10,20 +10,19 @@
 
     <RadioGroup
         android:id="@+id/radio_group"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="40dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <RadioButton
             android:id="@+id/equal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:text="@string/equal"
-            />
+            android:text="@string/equal" />
 
         <RadioButton
             android:id="@+id/percentage"
@@ -37,8 +36,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="4dp"
-            android:text="@string/value"
-            />
+            android:text="@string/value" />
 
     </RadioGroup>
     <FrameLayout
