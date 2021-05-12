@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                     Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
                                             .setContentTitle("Marked as paid")
                                             .setContentText(String.format("Order at %s was marked as paid by participant", dc.getDocument().get("restaurant")))
-                                            .setSmallIcon(R.drawable.ic_notification)
+                                            .setSmallIcon(R.drawable.icon2)
                                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                                             .setContentIntent(pendingIntent)
                                             .build();
@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         Notification notification = new NotificationCompat.Builder(MainActivity.this, CHANNEL_ID)
                                                 .setContentTitle(String.format("Order submitted by %s at %s", hostName, restaurant))
                                                 .setContentText(String.format("You need to pay $%.2f for the recent order", moneyOwed.get(userIndexInList)))
-                                                .setSmallIcon(R.drawable.ic_notification)
+                                                .setSmallIcon(R.drawable.icon2)
                                                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                                                 .setContentIntent(pendingIntent)
                                                 .build();

@@ -223,7 +223,7 @@ public class ValueFragment extends Fragment {
                     Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                             .setContentTitle("Get ready to pay")
                             .setContentText(String.format("You need to pay $%s for the recent order at %s", String.format("%.2f", valueListAdapter.getUserToPayValue()), restaurant))
-                            .setSmallIcon(R.drawable.ic_notification)
+                            .setSmallIcon(R.drawable.icon2)
                             .setPriority(NotificationCompat.PRIORITY_HIGH)
                             .setContentIntent(pendingIntent)
                             .build();

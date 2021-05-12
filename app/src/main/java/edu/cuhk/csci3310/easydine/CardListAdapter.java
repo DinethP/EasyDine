@@ -72,6 +72,9 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
             case 4:
                 holder.imageView.setImageResource(R.drawable.about_us);
                 break;
+            case 5:
+                holder.imageView.setImageResource(R.drawable.ic_baseline_access_time_24);
+                break;
         }
 
         // make the cards clickable

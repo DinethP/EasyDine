@@ -238,7 +238,9 @@ public class EqualFragment extends Fragment {
                 if (persons != null){
                     // get equal amount paid
                     for (int i = 0; i < persons.size()+1; i++){
-                        moneyOwed.set(i, Double.parseDouble(textView.getText().toString()));
+                        String s = textView.getText().toString();
+                        String s1 = s.replace("Amount: ", "");
+                        moneyOwed.set(i, Double.parseDouble(s1));
                     }
                     OrderSummary summary = new OrderSummary(orderID, userID, userName, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
                     //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
@@ -263,7 +265,7 @@ public class EqualFragment extends Fragment {
                 Notification notification = new NotificationCompat.Builder(getContext(), CHANNEL_ID)
                         .setContentTitle("Get ready to pay")
                         .setContentText(String.format("You need to pay $%s for the recent order at %s", userToPay, restaurant))
-                        .setSmallIcon(R.drawable.ic_notification)
+                        .setSmallIcon(R.drawable.icon2)
                         .setPriority(NotificationCompat.PRIORITY_HIGH)
                         .setContentIntent(pendingIntent)
                         .build();
