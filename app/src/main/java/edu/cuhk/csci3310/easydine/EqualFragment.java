@@ -136,7 +136,7 @@ public class EqualFragment extends Fragment {
             userToPay = String.format("%.2f", amount / (persons.size()+1));
         } else{
             editText1.setText(String.valueOf(1));
-            textView.setText(String.valueOf(0));
+            textView.setText(String.format("Amount: %.2f", 0.00));
             userToPay = String.valueOf(0);
         }
 
@@ -175,7 +175,7 @@ public class EqualFragment extends Fragment {
                 modified = true;
                 if (s.isEmpty()){
                     currentPersons = 0;
-                    textView.setText(String.valueOf(0));
+                    textView.setText(String.format("Amount: %.2f", 0.00));
                 }
 
                 try {
@@ -183,7 +183,7 @@ public class EqualFragment extends Fragment {
                     textView.setText(String.format("Amount: %.2f", amount / (currentPersons)));
                 }catch (Exception e){
                     currentPersons = 0;
-                    textView.setText(String.valueOf(0));
+                    textView.setText(String.format("Amount: %.2f", 0.00));
                 }
                 userToPay = String.format("%.2f", amount / (currentPersons));
             }
@@ -206,7 +206,7 @@ public class EqualFragment extends Fragment {
                 int currentPersons = persons == null ? 1 : persons.size();
                 if (s.isEmpty()){
                     amount = 0;
-                    textView.setText(String.valueOf(0));
+                    textView.setText(String.format("Amount: %.2f", 0.00));
                 }
                 try {
                     amount = Double.parseDouble(s);
@@ -218,7 +218,7 @@ public class EqualFragment extends Fragment {
 
                 }catch(Exception e){
                     amount = 0;
-                    textView.setText(String.valueOf(0));
+                    textView.setText(String.format("Amount: %.2f", 0.00));
                 }
 
                 userToPay = String.format("%.2f", amount / (currentPersons));

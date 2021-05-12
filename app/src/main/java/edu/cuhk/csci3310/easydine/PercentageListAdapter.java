@@ -136,7 +136,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
 
     @Override
     public int getItemCount() {
-        return persons == null ? 6 : persons.size() + 1;
+        return persons == null ? 4 : persons.size() + 1;
     }
 
     public double getUserToPayValue (){

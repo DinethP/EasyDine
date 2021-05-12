@@ -115,7 +115,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
 
     @Override
     public int getItemCount() {
-        return persons == null ? 6 : persons.size() + 1;
+        return persons == null ? 4 : persons.size() + 1;
     }
 
     public double getUserToPayValue (){

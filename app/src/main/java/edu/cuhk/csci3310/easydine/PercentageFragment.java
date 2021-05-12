@@ -265,7 +265,7 @@ public class PercentageFragment extends Fragment {
             double previous = intent.getDoubleExtra("PREVIOUS", 0);
             percentage -= previous;
             percentage += value;
-            String v = "Total Percentage: " + percentage;
+            String v = "Total percentage: " + percentage;
             textView.setText(v);
 
         }
