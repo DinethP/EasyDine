@@ -177,9 +177,8 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
                 intent.putExtra("AMOUNT", amount[0]);
                 intent.putExtra("COUNT_PEOPLE", mFriends);
                 intent.putStringArrayListExtra("FRIENDS", friendsList);
-
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 holder.cardItem.getContext().startActivity(intent);
-                ((Activity)holder.cardItem.getContext()).finish();
             }
         });
     }

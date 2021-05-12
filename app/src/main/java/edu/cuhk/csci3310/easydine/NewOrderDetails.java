@@ -150,6 +150,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                         orders.add(order);
                         intent.putExtra("accountName", userID);
                         Toast.makeText(getApplicationContext(), "Personal order submitted", Toast.LENGTH_SHORT).show();
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     } else{
                         Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
@@ -169,6 +170,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                                     intent.putExtra(COUNT_TAG, selectedUser.size());
                                     intent.putExtra(AMOUNT_TAG, sum);
                                     intent.putExtra("ORDER", orderSummary);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                     startActivity(intent);
                                 } else {
                                     Log.d(TAG, "Error saving order: ", task.getException());
