@@ -179,7 +179,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
                 intent.putStringArrayListExtra("FRIENDS", friendsList);
 
                 holder.cardItem.getContext().startActivity(intent);
-                ((Activity)context).finish();
+                ((Activity)holder.cardItem.getContext()).finish();
             }
         });
     }
@@ -217,4 +217,5 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
             bmImage.setImageBitmap(result);
         }
     }
+
 }
