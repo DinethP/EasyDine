@@ -66,8 +66,8 @@ public class LoginActivity extends AppCompatActivity {
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
         // signout user if LOGOUT extra is false in intent from MainActivity (when clicking logout in nav_menu)
         Bundle extras = getIntent().getExtras();
-        if(extras != null){
-            if(extras.getBoolean("LOGOUT", false)){
+        if (extras != null) {
+            if (extras.getBoolean("LOGOUT", false)) {
                 signOut();
             }
         }
@@ -78,10 +78,12 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
     }
+
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
+
     private void signOut() {
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
@@ -92,6 +94,7 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseAuth.getInstance().signOut();
         Toast.makeText(getApplicationContext(), "Successfully signed out", Toast.LENGTH_SHORT).show();
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -171,9 +174,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUI(FirebaseUser account){
+    private void updateUI(FirebaseUser account) {
         //  user signed into app, open MainActivity
-        if(account != null){
+        if (account != null) {
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
         }

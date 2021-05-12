@@ -24,7 +24,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
     Intent intent;
     String accountName;
 
-    class CardViewHolder extends RecyclerView.ViewHolder{
+    class CardViewHolder extends RecyclerView.ViewHolder {
 
         // ImageView imageView1, imageView2;
         TextView textView;
@@ -39,7 +39,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
         }
     }
 
-    public CardListAdapter(Context context, LinkedList<String> cardNameList, String accountDisplayName){
+    public CardListAdapter(Context context, LinkedList<String> cardNameList, String accountDisplayName) {
         mInflater = LayoutInflater.from(context);
         this.mCardNameList = cardNameList;
         this.accountName = accountDisplayName;
@@ -56,7 +56,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
     public void onBindViewHolder(@NonNull CardViewHolder holder, int position) {
         String cardName = mCardNameList.get(position);
         holder.textView.setText(cardName);
-        switch (position){
+        switch (position) {
             case 0:
                 holder.imageView.setImageResource(R.drawable.new_order);
                 break;
@@ -64,13 +64,13 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                 holder.imageView.setImageResource(R.drawable.past_order);
                 break;
             case 2:
-                holder.imageView.setImageResource(R.drawable.split_bill);
+                holder.imageView.setImageResource(R.drawable.ic_outline_receipt_long_24);
                 break;
             case 3:
                 holder.imageView.setImageResource(R.drawable.analytics);
                 break;
             case 4:
-                holder.imageView.setImageResource(R.drawable.about_us);
+                holder.imageView.setImageResource(R.drawable.ic_outline_info_24);
                 break;
             case 5:
                 holder.imageView.setImageResource(R.drawable.ic_baseline_access_time_24);
@@ -81,7 +81,7 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                switch (position){
+                switch (position) {
                     // 1st card: new order
                     case 0:
                         intent = new Intent(view.getContext(), PlacesActivity.class);

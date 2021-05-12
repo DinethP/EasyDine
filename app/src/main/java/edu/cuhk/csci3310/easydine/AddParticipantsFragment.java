@@ -46,30 +46,29 @@ public class AddParticipantsFragment extends Fragment {
         db.collection("users")
                 .orderBy("userName", Query.Direction.ASCENDING)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                        // get currentUserId
-                        String currUserUid = user.getUid();
-                        if(task.isSuccessful()){
-                            for (QueryDocumentSnapshot document : task.getResult()){
-                                // add all users except current user
-                                if(document.getId().equals(currUserUid)) {
-                                    continue;
-                                }
-                                else {
-                                    userNames.add(document.toObject(User.class));
-                                }
-                            }
-                            // firestore takes time to load, so names get after view is created
-                            // so notify adpater to show  updated names
-                            userListAdapter.notifyDataSetChanged();
-                            Log.d(TAG, userNames.toString());
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                // get currentUserId
+                String currUserUid = user.getUid();
+                if (task.isSuccessful()) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        // add all users except current user
+                        if (document.getId().equals(currUserUid)) {
+                            continue;
                         } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
+                            userNames.add(document.toObject(User.class));
                         }
                     }
-                });
+                    // firestore takes time to load, so names get after view is created
+                    // so notify adpater to show  updated names
+                    userListAdapter.notifyDataSetChanged();
+                    Log.d(TAG, userNames.toString());
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
         recyclerView = view.findViewById(R.id.recyclerview);
         userListAdapter = new UserListAdapter(getContext(), userNames);
         recyclerView.setAdapter(userListAdapter);
@@ -78,7 +77,7 @@ public class AddParticipantsFragment extends Fragment {
     }
 
     // send selected particpants linkedlist from userListAdapter to PlacesActivity
-    public LinkedList<User> getSelectedParticpants(){
+    public LinkedList<User> getSelectedParticpants() {
         return userListAdapter.getSelectedParticpants();
     }
 }
