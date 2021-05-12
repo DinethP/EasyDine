@@ -268,9 +268,8 @@ public class EqualFragment extends Fragment {
                         .build();
                 NotificationManagerCompat notificationManager = NotificationManagerCompat.from(getActivity());
                 notificationManager.notify(NOTIFICATION_ID, notification);
-                Intent intent = new Intent(getActivity(), PastOrdersActivity.class);
-                String email = user.getEmail();
-                intent.putExtra("accountName", email);
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(intent);
             }
         });

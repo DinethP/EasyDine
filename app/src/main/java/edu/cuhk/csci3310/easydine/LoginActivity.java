@@ -64,10 +64,12 @@ public class LoginActivity extends AppCompatActivity {
                 .build();
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-        // signout user if isLoggedIn is set to false by MainActivity when clicking logout  item
-        if(!sharedPreferences.getBoolean(KEY, true)){
-            Log.d(TAG, "Checking if user is logged out");
-            signOut();
+        // signout user if LOGOUT extra is false in intent from MainActivity (when clicking logout in nav_menu)
+        Bundle extras = getIntent().getExtras();
+        if(extras != null){
+            if(extras.getBoolean("LOGOUT", false)){
+                signOut();
+            }
         }
         findViewById(R.id.sign_in_button).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +83,6 @@ public class LoginActivity extends AppCompatActivity {
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
     private void signOut() {
-        // TODO: Bug where dashboard still shows when user minimises and comes back to app
         mGoogleSignInClient.signOut()
                 .addOnCompleteListener(this, new OnCompleteListener<Void>() {
                     @Override
@@ -89,6 +90,7 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         FirebaseAuth.getInstance().signOut();
+        Toast.makeText(getApplicationContext(), "Successfully signed out", Toast.LENGTH_SHORT).show();
     }
     @Override
     protected void onStart() {
@@ -109,7 +111,8 @@ public class LoginActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "signInWithCredential:success");
+//                            Log.d(TAG, "signInWithCredential:success");
+                            Toast.makeText(getApplicationContext(), "Welcome to EasyDine", Toast.LENGTH_SHORT).show();
                             FirebaseUser user = mAuth.getCurrentUser();
                             // Signed in successfully, show authenticated UI.
                             updateUI(user);
@@ -137,7 +140,8 @@ public class LoginActivity extends AppCompatActivity {
                             editor.apply();
                         } else {
                             // If sign in fails, display a message to the user.
-                            Log.w(TAG, "signInWithCredential:failure", task.getException());
+                            Toast.makeText(getApplicationContext(), "Sign in failed", Toast.LENGTH_SHORT).show();
+//                            Log.w(TAG, "signInWithCredential:failure", task.getException());
                             updateUI(null);
 
                             SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -166,32 +170,11 @@ public class LoginActivity extends AppCompatActivity {
             }
         }
     }
-//    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
-//        try {
-//            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
-//            // authenticate in firebase
-//            firebaseAuthWithGoogle(account.getIdToken());
-//
-//        } catch (ApiException e) {
-//            // The ApiException status code indicates the detailed failure reason.
-//            // Please refer to the GoogleSignInStatusCodes class reference for more information.
-//            Log.w(TAG, "Google sign in failed. signInResult:failed code=" + e.getStatusCode());
-//        }
-//    }
 
     private void updateUI(FirebaseUser account){
-        //  user has not signed into app, so keep shpwing the LoginActivity
-        if(account == null){
-            Toast toast =  Toast.makeText(getApplicationContext(), "Could not sign into Google Account", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        //  user signed in, open main activity with account object passed to it
-        else{
-            Toast toast =  Toast.makeText(getApplicationContext(), account.getEmail(), Toast.LENGTH_SHORT);
-            toast.show();
+        //  user signed into app, open MainActivity
+        if(account != null){
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-//            intent.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-            intent.putExtra("ACCOUNT", account);
             startActivity(intent);
         }
     }

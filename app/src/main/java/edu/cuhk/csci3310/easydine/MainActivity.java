@@ -18,7 +18,6 @@ import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -57,8 +56,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private String TAG = "MainActivity";
-    private String KEY = "isLoggedIn";
-    private String preferencesName = "UserDetails";
     public String userDisplayName;
     public String userEmail;
 
@@ -70,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     DrawerLayout drawerLayout;
     NavigationView navigationView;
     Toolbar toolbar;
-    SharedPreferences sharedPreferences;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
 
 
@@ -81,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getApplicationContext().getSharedPreferences(preferencesName, Context.MODE_PRIVATE);
         setContentView(R.layout.activity_main);
 
         // create notification channel
@@ -92,7 +87,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .addNextIntentWithParentStack(intent)
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
+//        FirebaseUser account = getIntent().getParcelableExtra("ACCOUNT");
+        FirebaseUser account = FirebaseAuth.getInstance().getCurrentUser();
         userEmail = account.getEmail();
         userDisplayName = account.getDisplayName();
         User currentUser = new User(userDisplayName);
@@ -255,11 +251,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             case R.id.logout:
                 // open loginActivity again to logout
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putBoolean(KEY, false);
-                editor.commit();
                 Intent loginIntent = new Intent(MainActivity.this, LoginActivity.class);
+                loginIntent.putExtra("LOGOUT", true);
+                loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(loginIntent);
+                finish();
 
         }
         drawerLayout.closeDrawer(GravityCompat.START);
