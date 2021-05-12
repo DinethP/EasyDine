@@ -204,6 +204,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                     // can only go to next activity if participants are selected
                     if (addParticipantsFragment.getSelectedParticpants().size() > 0){
                         intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                     }
                     else {
@@ -211,6 +212,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                     }
                 }
                 else {
+                    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
             }

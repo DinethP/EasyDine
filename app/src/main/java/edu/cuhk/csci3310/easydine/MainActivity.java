@@ -232,19 +232,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()){
             case R.id.nav_new_orders:
                 Intent newOrderintent = new Intent(MainActivity.this, PlacesActivity.class);
+                newOrderintent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(newOrderintent);
                 break;
             case R.id.nav_past_orders:
                 Intent pastOrderIntent = new Intent(MainActivity.this, PastOrdersActivity.class);
+                pastOrderIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 pastOrderIntent.putExtra("accountName", email);
                 startActivity(pastOrderIntent);
                 break;
             case R.id.nav_split_bill:
                 Intent splitBillIntent = new Intent(MainActivity.this, PayActivity.class);
+                splitBillIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(splitBillIntent);
                 break;
             case R.id.nav_analytics:
                 Intent analyticsIntent = new Intent(MainActivity.this, AnalyticsActivity.class);
+                analyticsIntent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 analyticsIntent.putExtra("accountName", email);
                 startActivity(analyticsIntent);
                 break;
