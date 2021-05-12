@@ -9,9 +9,10 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:screenOrientation="portrait"
+
         android:theme="@style/Theme.EasyDine">
-        <activity android:name=".PastOrderDetail"></activity>
+        <activity android:name=".PastOrderDetail"
+            android:screenOrientation="portrait"></activity>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
@@ -20,13 +21,21 @@
              sign the APK for publishing.
              You can define the keys for the debug and release targets in src/debug/ and src/release/.
         -->
-        <activity android:name=".NewOrderDetails" />
-        <activity android:name=".PastOrdersActivity" />
-        <activity android:name=".AnalyticsActivity" />
-        <activity android:name=".PlacesActivity" />
-        <activity android:name=".PayActivity" />
-        <activity android:name=".MyProfile" />
+
+        <activity android:name=".NewOrderDetails"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".PastOrdersActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".AnalyticsActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".PlacesActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".PayActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name=".MyProfile"
+            android:screenOrientation="portrait"/>
         <activity
+            android:screenOrientation="portrait"
             android:name=".LoginActivity"
             android:noHistory="true">
             <intent-filter>
@@ -35,7 +44,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity> <!-- android:noHistory doesn't put LoginScreen to backstack -->
-        <activity android:name=".MainActivity" />
+        <activity android:name=".MainActivity"
+            android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
