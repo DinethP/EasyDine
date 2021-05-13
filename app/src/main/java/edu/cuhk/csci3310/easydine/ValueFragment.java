@@ -155,6 +155,8 @@ public class ValueFragment extends Fragment {
                 String s = charSequence.toString();
 
                 if (s.isEmpty()){
+                    valueListAdapter = new ValueListAdapter(view.getContext(), persons);
+                    recyclerView.setAdapter(valueListAdapter);
                     total = 0.0;
                     String v = "Remaining amount: " + total;
                     remaining.setText(v);

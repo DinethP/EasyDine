@@ -90,6 +90,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                 String s = editable.toString();
                 Intent intent = new Intent("update_value");
                 Intent intent1 = new Intent("PASS_AMOUNT");
+                double value;
                 try {
                     intent.putExtra("value", Double.parseDouble(s));
                     // current user is the first person on the list. So get that value for notification
@@ -102,7 +103,13 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                     intent.putExtra("PREVIOUS", previous);
                     userToPay = 0.0;
                 }
-                double value = Double.parseDouble(holder.value.getText().toString());
+
+                try{
+                    value = Double.parseDouble(holder.value.getText().toString());
+                }catch (Exception e){
+                    value = 0;
+                }
+
                 intent1.putExtra("AMOUNT", value);
                 intent1.putExtra("POSITION", position);
 

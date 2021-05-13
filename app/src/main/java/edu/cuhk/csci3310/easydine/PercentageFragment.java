@@ -167,6 +167,9 @@ public class PercentageFragment extends Fragment {
                 if(s.isEmpty()){
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
+                    percentage = 0;
+                    String v = "Total percentage: " + percentage;
+                    textView.setText(v);
                 }
                 // if the field is not empty, pass the value to the adapter
                 try{
@@ -177,6 +180,9 @@ public class PercentageFragment extends Fragment {
                 }catch (Exception e){
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
+                    percentage = 0;
+                    String v = "Total percentage: " + percentage;
+                    textView.setText(v);
                 }
 
             }
