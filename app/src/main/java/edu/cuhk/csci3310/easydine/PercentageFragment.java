@@ -175,6 +175,9 @@ public class PercentageFragment extends Fragment {
                     total = Double.parseDouble(s);
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), total, persons);
                     recyclerView.setAdapter(percentageListAdapter);
+                    percentage = 0;
+                    String v = "Total percentage: " + percentage;
+                    textView.setText(v);
                     // if error is encountered, pass 0 to the adapter
                 } catch (Exception e) {
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
