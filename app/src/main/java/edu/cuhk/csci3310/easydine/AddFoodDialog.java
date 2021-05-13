@@ -18,6 +18,7 @@ public class AddFoodDialog extends AppCompatDialogFragment {
     private EditText foodNameView;
     private EditText foodPriceView;
     private AddFoodDialogListener listener;
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class AddFoodDialog extends AppCompatDialogFragment {
                 .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                    // need to be left empty for backward compatibility of android versions
+                        // need to be left empty for backward compatibility of android versions
                     }
                 });
         foodNameView = view.findViewById(R.id.edit_food_name);
@@ -49,13 +50,11 @@ public class AddFoodDialog extends AppCompatDialogFragment {
         dialog.show();
         // prevent dialog from closing automatically when ok is pressed when the data is incorrect
         // check all data inputs
-        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener()
-        {
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v)
-            {
+            public void onClick(View v) {
                 Boolean closeDialog = false;
-                if(foodNameView.getText().length() > 0){
+                if (foodNameView.getText().length() > 0) {
                     String foodName = foodNameView.getText().toString();
                     try {
                         Double foodPrice = Double.parseDouble(foodPriceView.getText().toString());
@@ -65,13 +64,12 @@ public class AddFoodDialog extends AppCompatDialogFragment {
                         // both inputs are validated, so can close dialog
                         closeDialog = true;
                     } catch (NumberFormatException e) {
-                        Toast.makeText(getContext() ,"Please enter a valid price", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Please enter a valid price", Toast.LENGTH_SHORT).show();
                     }
+                } else {
+                    Toast.makeText(getContext(), "Please fill out both fields correctly", Toast.LENGTH_SHORT).show();
                 }
-                else {
-                    Toast.makeText(getContext() ,"Please fill out both fields correctly", Toast.LENGTH_SHORT).show();
-                }
-                if(closeDialog)
+                if (closeDialog)
                     dialog.dismiss();
                 //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
             }
@@ -91,7 +89,7 @@ public class AddFoodDialog extends AppCompatDialogFragment {
         }
     }
 
-    public interface AddFoodDialogListener{
+    public interface AddFoodDialogListener {
         void applyFoodDetails(String foodName, Double foodPrice);
     }
 }

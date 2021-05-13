@@ -112,29 +112,28 @@ public class PercentageFragment extends Fragment {
         calButton.setVisibility(View.GONE);
 
         // get the number of people and the total amount from the PayActivity
-        if (getArguments() != null){
+        if (getArguments() != null) {
 //            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
             total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
             // check if we should store order summary to firestore
-            if(getArguments().getSerializable("ORDER") != null){
+            if (getArguments().getSerializable("ORDER") != null) {
                 orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
                 persons = orderSummary.friends;
                 openedFromNewOrderDetailsActivity = true;
                 calButton.setVisibility(View.VISIBLE);
             }
-        }
-        else{
+        } else {
             total = 0;
             persons = new ArrayList<User>();
         }
 
         // init moneyOwed list
-        if (persons != null){
-            for (int i = 0;i <persons.size()+1; i++){
+        if (persons != null) {
+            for (int i = 0; i < persons.size() + 1; i++) {
                 moneyOwed.add(i, 0.0);
             }
-        }else{
-            for (int i = 0;i < 7; i++){
+        } else {
+            for (int i = 0; i < 7; i++) {
                 moneyOwed.add(i, 0.0);
             }
             // calButton.setVisibility(View.VISIBLE);
@@ -164,7 +163,7 @@ public class PercentageFragment extends Fragment {
                 // when the amount is changed, set up a new recyclerview
 
                 // if the field is empty, pass 0 to the recyclerview adapter
-                if(s.isEmpty()){
+                if (s.isEmpty()) {
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
                     percentage = 0;
@@ -172,12 +171,12 @@ public class PercentageFragment extends Fragment {
                     textView.setText(v);
                 }
                 // if the field is not empty, pass the value to the adapter
-                try{
+                try {
                     total = Double.parseDouble(s);
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), total, persons);
                     recyclerView.setAdapter(percentageListAdapter);
-                // if error is encountered, pass 0 to the adapter
-                }catch (Exception e){
+                    // if error is encountered, pass 0 to the adapter
+                } catch (Exception e) {
                     percentageListAdapter = new PercentageListAdapter(view.getContext(), 0.0, persons);
                     recyclerView.setAdapter(percentageListAdapter);
                     percentage = 0;
@@ -193,7 +192,7 @@ public class PercentageFragment extends Fragment {
             }
         });
 
-        if (orderSummary != null){
+        if (orderSummary != null) {
             orderID = orderSummary.orderID;
             userID = orderSummary.userID;
             restaurant = orderSummary.restaurant;
@@ -212,16 +211,16 @@ public class PercentageFragment extends Fragment {
         calButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (percentage != 100){
-                    Toast toast =  Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
+                if (percentage != 100) {
+                    Toast toast = Toast.makeText(getContext(), "Percentage not equal to 100%!", Toast.LENGTH_SHORT);
                     toast.show();
-                }else{
+                } else {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     String userName = user.getDisplayName();
                     // send orderSummary to firebase
                     mDatabase = FirebaseFirestore.getInstance();
                     CollectionReference orderSummaryRef = mDatabase.collection("orderSummary");
-                    if (persons != null){
+                    if (persons != null) {
                         OrderSummary summary = new OrderSummary(orderID, userID, userName, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
                         //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
                         orderSummaryRef.add(summary);
@@ -229,7 +228,7 @@ public class PercentageFragment extends Fragment {
                         orderSummaryRef.whereEqualTo("orderID", orderID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("isConfirmed", true);
@@ -262,8 +261,9 @@ public class PercentageFragment extends Fragment {
         return view;
 
     }
+
     // receive updates from the list adapter
-    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -287,7 +287,7 @@ public class PercentageFragment extends Fragment {
     };
 
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);

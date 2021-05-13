@@ -16,10 +16,10 @@ public class OrderSummary implements Serializable {
     public boolean isConfirmed = false;
     public List<Double> moneyOwed;
 
-    public OrderSummary(){
+    public OrderSummary() {
     }
 
-    public OrderSummary(String orderID, String userID, String hostName, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed){
+    public OrderSummary(String orderID, String userID, String hostName, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed) {
         this.amount = amount;
         this.orderTime = orderTime;
         this.restaurant = restaurant;
@@ -34,7 +34,7 @@ public class OrderSummary implements Serializable {
 
     }
 
-    public OrderSummary(String orderID, String userID, String hostName, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed, double hostOwes, List<Double> moneyOwed){
+    public OrderSummary(String orderID, String userID, String hostName, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed, double hostOwes, List<Double> moneyOwed) {
         this.amount = amount;
         this.orderTime = orderTime;
         this.restaurant = restaurant;
@@ -53,6 +53,7 @@ public class OrderSummary implements Serializable {
     public void setMoneyOwed(ArrayList<Double> moneyOwed) {
         this.moneyOwed = moneyOwed;
     }
+
     public void setHostOwes(Double hostOwes) {
         this.hostOwes = hostOwes;
     }

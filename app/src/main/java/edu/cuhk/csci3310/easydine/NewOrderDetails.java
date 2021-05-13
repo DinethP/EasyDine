@@ -47,7 +47,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
 
-public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener{
+public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.AddFoodDialogListener {
     private String TAG = "NewOrderActivity";
     private Place place;
     private FoodListAdapter foodListAdapter;
@@ -68,6 +68,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
 
     Button add_food_button;
     Button submit_button;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,11 +88,11 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         isSingle = bundle.getBoolean("SINGLE_ORDER");
         selectedUser = (ArrayList<User>) bundle.getSerializable("PARTICIPANTS");
         // show participants section only if it is a group order
-        if(!isSingle){
+        if (!isSingle) {
             // TODO: BUG HERE
             selectedParticipants = (ArrayList<User>) getIntent().getSerializableExtra("PARTICIPANTS");
             // extract names from User objects
-            for(User user : selectedParticipants){
+            for (User user : selectedParticipants) {
                 participantNames.add(user.getUserName());
             }
             // convert arraylist to string
@@ -119,10 +120,9 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
             @Override
             public void onClick(View view) {
                 // only proceed if at least one food item is enters
-                if(foodNames.size() == 0){
+                if (foodNames.size() == 0) {
                     Toast.makeText(getApplicationContext(), "Please enter the food eaten", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     mDatabase = FirebaseFirestore.getInstance();
                     CollectionReference orders = mDatabase.collection("orders");
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -144,7 +144,7 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                     // LinkedList<String> friends = new LinkedList<String>(Arrays.asList("Alex", "Bob"));
                     String timeStamp = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Date());
 
-                    if(isSingle){
+                    if (isSingle) {
                         Intent intent = new Intent(NewOrderDetails.this, MainActivity.class);
                         Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, true);
                         orders.add(order);
@@ -152,20 +152,20 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
                         Toast.makeText(getApplicationContext(), "Personal order submitted", Toast.LENGTH_SHORT).show();
                         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
-                    } else{
+                    } else {
                         Intent intent = new Intent(NewOrderDetails.this, PayActivity.class);
                         Order order = new Order(userID, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
                         orders.add(order).addOnCompleteListener(new OnCompleteListener<DocumentReference>() {
                             @Override
                             public void onComplete(@NonNull Task<DocumentReference> task) {
-                                if(task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     Log.d(TAG, "Group order successfully saved");
                                     firestoreOrderId = task.getResult().getId();
                                     Log.d(TAG, "OrderID from group: " + firestoreOrderId);
 
-    //                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
-    //                                intent.putExtra("PLACE", place);
-    //                                intent.putExtra("ORDER_ID", firestoreOrderId);
+                                    //                                intent.putExtra("PARTICIPANTS", (Serializable) selectedUser);
+                                    //                                intent.putExtra("PLACE", place);
+                                    //                                intent.putExtra("ORDER_ID", firestoreOrderId);
                                     OrderSummary orderSummary = new OrderSummary(firestoreOrderId, userID, userName, restaurantName, sum, timeStamp, selectedUser, foodNames, foodPrices, imageURL, false);
                                     intent.putExtra(COUNT_TAG, selectedUser.size());
                                     intent.putExtra(AMOUNT_TAG, sum);
@@ -198,20 +198,20 @@ public class NewOrderDetails extends AppCompatActivity implements AddFoodDialog.
         foodListAdapter.notifyDataSetChanged();
     }
 
-    public double getSum(LinkedList<Double> foodPrices){
+    public double getSum(LinkedList<Double> foodPrices) {
         double sum = 0.0;
-        for(Double price : foodPrices){
+        for (Double price : foodPrices) {
             sum += price;
         }
         return sum;
     }
 
     // get photo reference from regex
-    public String getPhotoRef(String mataData){
+    public String getPhotoRef(String mataData) {
         Pattern pattern = Pattern.compile("(?<=, photoReference=).*");
         Matcher matcher = pattern.matcher(mataData);
         matcher.find();
         String result = matcher.group(0);
-        return result.substring(0, result.length()-1);
+        return result.substring(0, result.length() - 1);
     }
 }

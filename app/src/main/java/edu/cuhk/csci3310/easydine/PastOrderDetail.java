@@ -49,11 +49,11 @@ public class PastOrderDetail extends AppCompatActivity {
         if (friends.size() > 0) {
             String listString = friends.toString();
             s = listString.substring(1, listString.length() - 1);
-        }else{
+        } else {
             s = "Individual Order";
         }
 
-        rname.setText("Name: "+ name);
+        rname.setText("Name: " + name);
         timestamp.setText("Date: " + date);
         totalAmount.setText("Amount: $ " + amount);
         number.setText("# of friends: " + count);

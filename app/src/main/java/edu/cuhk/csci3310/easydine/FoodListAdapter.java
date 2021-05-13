@@ -29,12 +29,13 @@ public class FoodListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public FoodListAdapter(Context context, LinkedList<String> foodNames, LinkedList<Double> foodPrices){
+    public FoodListAdapter(Context context, LinkedList<String> foodNames, LinkedList<Double> foodPrices) {
         this.mInflater = LayoutInflater.from(context);
         this.foodNames = foodNames;
         this.foodPrices = foodPrices;
         this.context = context;
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {

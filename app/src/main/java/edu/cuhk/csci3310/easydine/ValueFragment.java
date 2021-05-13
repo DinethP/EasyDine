@@ -103,29 +103,28 @@ public class ValueFragment extends Fragment {
         calButton = view.findViewById(R.id.cal_button);
         calButton.setVisibility(View.GONE);
 
-        if (getArguments() != null){
+        if (getArguments() != null) {
 //            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
             total = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
 
-            if(getArguments().getSerializable("ORDER") != null){
+            if (getArguments().getSerializable("ORDER") != null) {
                 orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
                 persons = orderSummary.friends;
                 openedFromNewOrderDetailsActivity = true;
                 calButton.setVisibility(View.VISIBLE);
             }
-        }
-        else{
+        } else {
             total = 0;
             persons = new ArrayList<User>();
         }
 
         // init moneyOwed list
-        if (persons != null){
-            for (int i = 0;i <persons.size()+1; i++){
+        if (persons != null) {
+            for (int i = 0; i < persons.size() + 1; i++) {
                 moneyOwed.add(i, 0.0);
             }
-        }else{
-            for (int i = 0;i < 7; i++){
+        } else {
+            for (int i = 0; i < 7; i++) {
                 moneyOwed.add(i, 0.0);
             }
             // calButton.setVisibility(View.VISIBLE);
@@ -149,12 +148,13 @@ public class ValueFragment extends Fragment {
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             // update the remaining amount when the edit text field is updated
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
 
-                if (s.isEmpty()){
+                if (s.isEmpty()) {
                     valueListAdapter = new ValueListAdapter(view.getContext(), persons);
                     recyclerView.setAdapter(valueListAdapter);
                     total = 0.0;
@@ -165,7 +165,7 @@ public class ValueFragment extends Fragment {
                     total = Double.parseDouble(s);
                     String v = "Remaining amount: " + total;
                     remaining.setText(v);
-                }catch (Exception e){
+                } catch (Exception e) {
                     total = 0.0;
                     String v = "Remaining amount: " + total;
                     remaining.setText(v);
@@ -178,7 +178,7 @@ public class ValueFragment extends Fragment {
             }
         });
 
-        if (orderSummary != null){
+        if (orderSummary != null) {
             orderID = orderSummary.orderID;
             userID = orderSummary.userID;
             restaurant = orderSummary.restaurant;
@@ -194,16 +194,16 @@ public class ValueFragment extends Fragment {
         calButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (total != 0){
-                    Toast toast =  Toast.makeText(getContext(), "Remaining value not equal to 0!", Toast.LENGTH_SHORT);
+                if (total != 0) {
+                    Toast toast = Toast.makeText(getContext(), "Remaining value not equal to 0!", Toast.LENGTH_SHORT);
                     toast.show();
-                }else{
+                } else {
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     String userName = user.getDisplayName();
                     // show notification on how much to pay
                     mDatabase = FirebaseFirestore.getInstance();
                     CollectionReference orderSummaryRef = mDatabase.collection("orderSummary");
-                    if (persons != null){
+                    if (persons != null) {
                         OrderSummary summary = new OrderSummary(orderID, userID, userName, restaurant, amountPaid, orderTime, friends, dishes, prices, imageURL, isPayed, moneyOwed.get(0), moneyOwed.subList(1, moneyOwed.size()));
                         //Log.d("MONEY_OWNED", String.valueOf(moneyOwed.subList(1, moneyOwed.size())));
                         orderSummaryRef.add(summary);
@@ -211,7 +211,7 @@ public class ValueFragment extends Fragment {
                         orderSummaryRef.whereEqualTo("orderID", orderID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful()){
+                                if (task.isSuccessful()) {
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("isConfirmed", true);
@@ -239,9 +239,10 @@ public class ValueFragment extends Fragment {
         });
         return view;
     }
+
     // get the updated amount from the recycler view
     // and update the remaining amount
-    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver(){
+    public BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
 
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -265,7 +266,7 @@ public class ValueFragment extends Fragment {
     };
 
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);

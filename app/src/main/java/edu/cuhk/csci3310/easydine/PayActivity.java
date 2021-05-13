@@ -44,13 +44,13 @@ public class PayActivity extends AppCompatActivity {
         }
 
         final RadioGroup radioGroup = findViewById(R.id.radio_group);
-        try{
+        try {
             Bundle extras = getIntent().getExtras();
             amount = extras.getDouble(AMOUNT_TAG, 1.0);
             persons = extras.getInt(COUNT_TAG, 1);
             orderSummary = (OrderSummary) extras.getSerializable("ORDER");
             Log.d(TAG, "Order Summary in Pay Activity: " + orderSummary.userID);
-        }catch(Exception e){
+        } catch (Exception e) {
             amount = 0;
             persons = 0;
         }
@@ -76,7 +76,7 @@ public class PayActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 View radioButton = radioGroup.findViewById(i);
                 int index = radioGroup.indexOfChild(radioButton);
-                switch (index){
+                switch (index) {
                     // equal pay
                     case 0:
                         EqualFragment equalFragment = new EqualFragment();

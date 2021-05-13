@@ -126,11 +126,11 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
 
                     // get the names of the friends
                     List<Map> friends = (List<Map>) document.get("friends");
-                    if (friends != null){
+                    if (friends != null) {
                         friendsList.clear();
-                        for (Map map: friends){
+                        for (Map map : friends) {
                             String s = map.values().toString();
-                            s = s.replaceAll("[\\[\\]]","");
+                            s = s.replaceAll("[\\[\\]]", "");
                             friendsList.add(s);
                         }
                         Log.d("MAP_CHECK", String.valueOf(friendsList));
@@ -151,8 +151,7 @@ public class PastOrdersListAdapter extends RecyclerView.Adapter<PastOrdersListAd
         if (mIsPayed) {
             holder.isPayedButton.setText("Already Paid");
             holder.isPayedButton.setEnabled(false);
-        }
-        else {
+        } else {
             holder.isPayedButton.setEnabled(true);
         }
 

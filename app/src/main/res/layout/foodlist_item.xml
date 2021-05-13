@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="50dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="50dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:background="@color/white"
+        android:layout_height="40dp"
         android:layout_gravity="center"
-        android:layout_height="40dp">
+        android:background="@color/white">
 
         <ImageView
             android:id="@+id/food_image"
             android:layout_width="40dp"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
             android:foregroundGravity="center"
             android:src="@drawable/ic_food"
-            android:layout_marginHorizontal="10dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/food_name"
             app:layout_constraintLeft_toLeftOf="parent"

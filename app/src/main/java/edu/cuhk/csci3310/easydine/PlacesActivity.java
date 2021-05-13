@@ -200,18 +200,16 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                 Intent intent = new Intent(PlacesActivity.this, NewOrderDetails.class);
                 intent.putExtra("PLACE", place);
                 intent.putExtra("SINGLE_ORDER", isSingle);
-                if(!isSingle){
+                if (!isSingle) {
                     // can only go to next activity if participants are selected
-                    if (addParticipantsFragment.getSelectedParticpants().size() > 0){
+                    if (addParticipantsFragment.getSelectedParticpants().size() > 0) {
                         intent.putExtra("PARTICIPANTS", (Serializable) addParticipantsFragment.getSelectedParticpants());
                         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
-                    }
-                    else {
+                    } else {
                         Toast.makeText(getApplicationContext(), "No participants selected", Toast.LENGTH_SHORT).show();
                     }
-                }
-                else {
+                } else {
                     intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                 }
@@ -228,7 +226,7 @@ public class PlacesActivity extends AppCompatActivity implements LocationListene
                 View radioButton = radioGroup.findViewById(i);
                 //  get index of which button was clicked
                 int index = radioGroup.indexOfChild(radioButton);
-                switch (index){
+                switch (index) {
                     case singleOrder:
                         usersFrameLayout.setVisibility(View.GONE);
                         isSingle = true;

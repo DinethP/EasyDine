@@ -57,13 +57,13 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
     @Override
     public void onBindViewHolder(@NonNull ValueViewHolder holder, int position) {
 
-        if(persons != null){
-            if (position == 0){
+        if (persons != null) {
+            if (position == 0) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String userName = user.getDisplayName();
                 holder.name.setText(userName);
-            }else
-                holder.name.setText(persons.get(position-1).getUserName());
+            } else
+                holder.name.setText(persons.get(position - 1).getUserName());
         }
 
         holder.value.addTextChangedListener(new TextWatcher() {
@@ -72,12 +72,13 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
-                try{
+                try {
                     previous = Double.parseDouble(s);
-                }catch (Exception e){
+                } catch (Exception e) {
                     previous = 0;
                 }
             }
+
             // pass the amount to the fragment when the field is updated
             // return 0 if error is encountered
             @Override
@@ -94,7 +95,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                 try {
                     intent.putExtra("value", Double.parseDouble(s));
                     // current user is the first person on the list. So get that value for notification
-                    if(position == 0){
+                    if (position == 0) {
                         userToPay = Double.parseDouble(s);
                     }
                     intent.putExtra("PREVIOUS", previous);
@@ -104,9 +105,9 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
                     userToPay = 0.0;
                 }
 
-                try{
+                try {
                     value = Double.parseDouble(holder.value.getText().toString());
-                }catch (Exception e){
+                } catch (Exception e) {
                     value = 0;
                 }
 
@@ -125,7 +126,7 @@ public class ValueListAdapter extends RecyclerView.Adapter<ValueListAdapter.Valu
         return persons == null ? 4 : persons.size() + 1;
     }
 
-    public double getUserToPayValue (){
+    public double getUserToPayValue() {
         return userToPay;
     }
 }

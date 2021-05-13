@@ -110,4 +110,9 @@
     <string name="social_habits">Social Habits</string>
     <string name="spending_habits">Spending Habits</string>
     <string name="complete">Submit</string>
+    <string name="members"><b>Group Members:</b> \n
+                            &#8226; Sean Kevin O’Hare (1155116399) \n
+                            &#8226; Dineth Perera (1155098386) \n
+                            &#8226; Wong Man Kit (1155109120)</string>
+    <string name="introduction">EasyDine is intended to be a multi-functional mobile application with the primary goal of assisting users with the activity of dining out with their friends.</string>
 </resources>

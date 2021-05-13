@@ -13,10 +13,10 @@ public class Order {
     public String imageURL;
     public boolean isPayed;
 
-    public Order(){
+    public Order() {
     }
 
-    public Order(String userID, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed){
+    public Order(String userID, String restaurant, double amount, String orderTime, ArrayList<User> friends, LinkedList<String> dishes, LinkedList<Double> prices, String imageURL, boolean isPayed) {
         this.amount = amount;
         this.orderTime = orderTime;
         this.restaurant = restaurant;

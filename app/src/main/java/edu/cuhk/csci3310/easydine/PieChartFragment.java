@@ -71,9 +71,9 @@ public class PieChartFragment extends Fragment {
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
                         List<String> friends = (List<String>) document.get("friends");
-                        if (friends == null){
+                        if (friends == null) {
                             friendCounts.put(0, 1);
-                        }else{
+                        } else {
                             // Increment count
                             if (friendCounts.containsKey(friends.size())) {
                                 friendCounts.put(friends.size(), friendCounts.get(friends.size()) + 1);

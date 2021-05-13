@@ -109,6 +109,12 @@ public class CardListAdapter extends RecyclerView.Adapter<CardListAdapter.CardVi
                         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         view.getContext().startActivity(intent);
                         break;
+                    // 5th card: about us
+                    case 4:
+                        intent = new Intent(view.getContext(), AboutUsActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        view.getContext().startActivity(intent);
+                        break;
                 }
 
             }

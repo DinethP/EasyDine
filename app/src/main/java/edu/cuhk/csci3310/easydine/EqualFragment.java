@@ -72,6 +72,7 @@ public class EqualFragment extends Fragment {
     Button calButton;
 
     private FirebaseFirestore mDatabase;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,31 +93,30 @@ public class EqualFragment extends Fragment {
         calButton = view.findViewById(R.id.cal_button);
         calButton.setVisibility(View.GONE);
         // Inflate the layout for this fragment
-        if (getArguments() != null){
+        if (getArguments() != null) {
             amount = getArguments().getDouble(SPILT_AMOUNT_TAG, 0.0);
 //            persons = getArguments().getInt(SPILT_COUNT_TAG, 1);
 
             // check if we should store order summary to firestore
-            if(getArguments().getSerializable("ORDER") != null){
+            if (getArguments().getSerializable("ORDER") != null) {
                 orderSummary = (OrderSummary) getArguments().getSerializable("ORDER");
                 persons = orderSummary.friends;
                 openedFromNewOrderDetailsActivity = true;
                 calButton.setVisibility(View.VISIBLE);
             }
-        }
-        else{
+        } else {
             amount = 0;
             persons = new ArrayList<User>();
         }
 
         // init moneyOwed list
-        if (persons != null){
-            for (int i = 0;i <persons.size()+1; i++){
+        if (persons != null) {
+            for (int i = 0; i < persons.size() + 1; i++) {
                 moneyOwed.add(i, 0.0);
             }
-        }else{
+        } else {
             // quick split
-            for (int i = 0;i < 7; i++){
+            for (int i = 0; i < 7; i++) {
                 moneyOwed.add(i, 0.0);
             }
             // calButton.setVisibility(View.VISIBLE);
@@ -130,11 +130,11 @@ public class EqualFragment extends Fragment {
 
         editText1.setHint("No. of people");
         editText3.setHint("Amount");
-        if (persons != null){
-            editText1.setText(String.valueOf(persons.size()+1));
-            textView.setText(String.format("Amount: %.2f", amount / (persons.size()+1)));
-            userToPay = String.format("%.2f", amount / (persons.size()+1));
-        } else{
+        if (persons != null) {
+            editText1.setText(String.valueOf(persons.size() + 1));
+            textView.setText(String.format("Amount: %.2f", amount / (persons.size() + 1)));
+            userToPay = String.format("%.2f", amount / (persons.size() + 1));
+        } else {
             editText1.setText(String.valueOf(1));
             textView.setText(String.format("Amount: %.2f", 0.00));
             userToPay = String.valueOf(0);
@@ -143,8 +143,7 @@ public class EqualFragment extends Fragment {
         editText3.setText(String.valueOf(amount));
 
 
-
-        if (orderSummary != null){
+        if (orderSummary != null) {
             orderID = orderSummary.orderID;
             userID = orderSummary.userID;
             restaurant = orderSummary.restaurant;
@@ -173,7 +172,7 @@ public class EqualFragment extends Fragment {
                 String s = editable.toString();
                 int currentPersons;
                 modified = true;
-                if (s.isEmpty()){
+                if (s.isEmpty()) {
                     currentPersons = 0;
                     textView.setText(String.format("Amount: %.2f", 0.00));
                 }
@@ -181,7 +180,7 @@ public class EqualFragment extends Fragment {
                 try {
                     currentPersons = Integer.parseInt(s);
                     textView.setText(String.format("Amount: %.2f", amount / (currentPersons)));
-                }catch (Exception e){
+                } catch (Exception e) {
                     currentPersons = 0;
                     textView.setText(String.format("Amount: %.2f", 0.00));
                 }
@@ -204,19 +203,19 @@ public class EqualFragment extends Fragment {
             public void afterTextChanged(Editable editable) {
                 String s = editable.toString();
                 int currentPersons = persons == null ? 1 : persons.size();
-                if (s.isEmpty()){
+                if (s.isEmpty()) {
                     amount = 0;
                     textView.setText(String.format("Amount: %.2f", 0.00));
                 }
                 try {
                     amount = Double.parseDouble(s);
                     if (persons != null) // new order
-                        currentPersons = modified ? currentPersons : currentPersons+1;
+                        currentPersons = modified ? currentPersons : currentPersons + 1;
                     else
                         currentPersons = Integer.parseInt(editText1.getText().toString());
                     textView.setText(String.format("Amount: %.2f", amount / currentPersons));
 
-                }catch(Exception e){
+                } catch (Exception e) {
                     amount = 0;
                     textView.setText(String.format("Amount: %.2f", 0.00));
                 }
@@ -235,9 +234,9 @@ public class EqualFragment extends Fragment {
                 mDatabase = FirebaseFirestore.getInstance();
                 CollectionReference orderSummaryRef = mDatabase.collection("orderSummary");
 
-                if (persons != null){
+                if (persons != null) {
                     // get equal amount paid
-                    for (int i = 0; i < persons.size()+1; i++){
+                    for (int i = 0; i < persons.size() + 1; i++) {
                         String s = textView.getText().toString();
                         String s1 = s.replace("Amount: ", "");
                         moneyOwed.set(i, Double.parseDouble(s1));
@@ -249,7 +248,7 @@ public class EqualFragment extends Fragment {
                     orderSummaryRef.whereEqualTo("orderID", orderID).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()){
+                            if (task.isSuccessful()) {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("isConfirmed", true);
@@ -278,8 +277,9 @@ public class EqualFragment extends Fragment {
         });
         return view;
     }
+
     private void createNotificationChannel() {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel notificationChannel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
             NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(notificationChannel);

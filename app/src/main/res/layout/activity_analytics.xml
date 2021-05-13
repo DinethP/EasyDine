@@ -5,18 +5,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:id="@+id/bottomFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2"
+        tools:context=".AnalyticsActivity" />
+
     <fragment
         android:id="@+id/navFragment"
         android:name="edu.cuhk.csci3310.easydine.AnalyticsNavFragment"
         android:layout_width="match_parent"
         android:layout_height="75dp"
         android:layout_weight="1"
-        tools:context=".AnalyticsActivity" />
-
-    <FrameLayout
-        android:id="@+id/bottomFragmentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="2"
         tools:context=".AnalyticsActivity" />
 </LinearLayout>

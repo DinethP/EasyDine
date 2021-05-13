@@ -34,11 +34,10 @@ public class UserListAdapter extends RecyclerView.Adapter {
             userName.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(userName.isChecked()){
+                    if (userName.isChecked()) {
                         selectedParticpants.remove(userNames.get(getLayoutPosition()));
                         userName.setChecked(false);
-                    }
-                    else{
+                    } else {
                         selectedParticpants.addLast(userNames.get(getLayoutPosition()));
                         userName.setChecked(true);
                     }
@@ -47,12 +46,13 @@ public class UserListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public UserListAdapter(Context context, LinkedList<User> userNames){
+    public UserListAdapter(Context context, LinkedList<User> userNames) {
         Log.d(TAG, "In UserListAdapterconstructor");
         this.mInflater = LayoutInflater.from(context);
         this.userNames = userNames;
         this.context = context;
     }
+
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -65,7 +65,7 @@ public class UserListAdapter extends RecyclerView.Adapter {
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         UserListViewHolder userListViewHolder = (UserListViewHolder) holder;
-        Log.d(TAG, "Setting username in view holder: "+ userNames.get(position));
+        Log.d(TAG, "Setting username in view holder: " + userNames.get(position));
         userListViewHolder.userName.setText(userNames.get(position).getUserName());
     }
 
@@ -75,7 +75,7 @@ public class UserListAdapter extends RecyclerView.Adapter {
     }
 
     // send selectedParticipants linked list to AddParticipants Fragment
-    public LinkedList<User> getSelectedParticpants(){
+    public LinkedList<User> getSelectedParticpants() {
         return selectedParticpants;
     }
 }

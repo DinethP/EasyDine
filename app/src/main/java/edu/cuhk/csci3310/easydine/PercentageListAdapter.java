@@ -21,7 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAdapter.PercentageViewHolder>{
+public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAdapter.PercentageViewHolder> {
 
     private LayoutInflater mInflater;
 
@@ -33,7 +33,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     private ArrayList<User> persons;
     private double userToPay;
 
-    class PercentageViewHolder extends RecyclerView.ViewHolder{
+    class PercentageViewHolder extends RecyclerView.ViewHolder {
 
         EditText percentage;
         TextView amount, name;
@@ -51,7 +51,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     }
 
 
-    public PercentageListAdapter(Context context, double total, ArrayList<User> persons){
+    public PercentageListAdapter(Context context, double total, ArrayList<User> persons) {
         mInflater = LayoutInflater.from(context);
         this.total = total;
         this.persons = persons;
@@ -67,35 +67,38 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
     @Override
     public void onBindViewHolder(@NonNull PercentageViewHolder holder, int position) {
 
-        if(persons != null){
-            if (position == 0){
+        if (persons != null) {
+            if (position == 0) {
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                 String userName = user.getDisplayName();
                 holder.name.setText(userName);
-            }else
-                holder.name.setText(persons.get(position-1).getUserName());
+            } else
+                holder.name.setText(persons.get(position - 1).getUserName());
         }
 
 
         holder.percentage.addTextChangedListener(new TextWatcher() {
             final Context context = holder.percentage.getContext();
+
             @Override
             // store the previous value
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 String s = charSequence.toString();
-                try{
+                try {
                     previous = Double.parseDouble(s);
-                }catch (Exception e){
+                } catch (Exception e) {
                     previous = 0;
                 }
 
             }
+
             // the amount each person needs to pay will be updated instantly according to the input percentage
             // print 0 if error is encountered
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
             }
+
             // update the amount field
             // and pass the previous and current values to fragment for calculating the total value
             @Override
@@ -107,12 +110,12 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
                     Double value = Double.parseDouble(s) / 100 * total;
                     holder.amount.setText(String.format("%.1f", value));
                     // current user is the first person on the list. So get that value for notification
-                    if(position == 0){
+                    if (position == 0) {
                         userToPay = value;
                     }
                     intent.putExtra("PERCENTAGE", Double.parseDouble(s));
                     intent.putExtra("PREVIOUS", previous);
-                }catch (Exception e){
+                } catch (Exception e) {
                     holder.amount.setText(String.format("%.1f", 0.0));
                     intent.putExtra("PERCENTAGE", 0.0);
                     intent.putExtra("PREVIOUS", previous);
@@ -139,7 +142,7 @@ public class PercentageListAdapter extends RecyclerView.Adapter<PercentageListAd
         return persons == null ? 4 : persons.size() + 1;
     }
 
-    public double getUserToPayValue (){
+    public double getUserToPayValue() {
         return userToPay;
     }
 }

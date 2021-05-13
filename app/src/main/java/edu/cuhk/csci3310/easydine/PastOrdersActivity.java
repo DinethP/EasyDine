@@ -106,7 +106,7 @@ public class PastOrdersActivity extends AppCompatActivity {
             formattedDateString = dfOutput.format(inputDate);
             Log.d(TAG, formattedDateString);
         } catch (ParseException e) {
-            Log.d(TAG,  "Exception: " + e.getMessage());
+            Log.d(TAG, "Exception: " + e.getMessage());
             e.printStackTrace();
         }
         return formattedDateString;
