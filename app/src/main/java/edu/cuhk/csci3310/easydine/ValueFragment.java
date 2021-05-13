@@ -162,10 +162,14 @@ public class ValueFragment extends Fragment {
                     remaining.setText(v);
                 }
                 try {
+                    valueListAdapter = new ValueListAdapter(view.getContext(), persons);
+                    recyclerView.setAdapter(valueListAdapter);
                     total = Double.parseDouble(s);
                     String v = "Remaining amount: " + total;
                     remaining.setText(v);
                 } catch (Exception e) {
+                    valueListAdapter = new ValueListAdapter(view.getContext(), persons);
+                    recyclerView.setAdapter(valueListAdapter);
                     total = 0.0;
                     String v = "Remaining amount: " + total;
                     remaining.setText(v);
